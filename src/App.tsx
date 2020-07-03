@@ -4,7 +4,7 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import {Welcome, Home } from './components'
+import { Welcome, Home } from './components'
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
@@ -34,10 +34,10 @@ export default function App() {
             renders the first one that matches the current URL. */}
         <Switch>
           <Route path="/home">
-           <Home/>>
+            <Home />
           </Route>
           <Route path="/">
-            <Welcome/>>
+            <Welcome />
           </Route>
         </Switch>
       </Container>
