@@ -28,7 +28,7 @@ export default function Welcome({ user, setUser }: WelcomePropType) {
     (async () => {
 
       try {
-        const response = await fetch(process.env.REACT_APP_URL + '/users', { method: 'POST' })
+        const response = await fetch(process.env.REACT_APP_URL + '/users', { method: 'POST', credentials: 'include' })
         const json = await response.json()
         if (json.success) {
           setUser({
