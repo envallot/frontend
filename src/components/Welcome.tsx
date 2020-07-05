@@ -38,11 +38,11 @@ export default function Welcome({ setUser, setError, setShowErrorModal }: Welcom
   useEffect(() => {
     (async () => {
       try {
-        const response = await fetch(process.env.REACT_APP_URL + '/users', { method: 'POST', credentials: 'include' })
+        const response = await fetch(process.env.REACT_APP_URL + '/user', { method: 'POST', credentials: 'include' })
         const json = await response.json()
         if (response.status > 400) {
           console.log(json)
-          throw new NetworkError(json.code, json.name, json.error)
+          throw new NetworkError(response.status.toString(), json.name, json.message)
         }
         setUser({
           id: json.id,

@@ -27,7 +27,7 @@ export default function ErrorModal({ handleClose, message, code, name, open }: E
       <DialogTitle id="alert-dialog-title">{code}</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          {name || message}
+          {name}: {message}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
