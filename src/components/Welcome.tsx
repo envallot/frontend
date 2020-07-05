@@ -1,18 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Container, Typography } from '@material-ui/core';
 import { useHistory } from 'react-router'
-import { useFetch } from '../hooks'
+
+class NetworkError {
+  message: string
+  code: string
+  name: string
+  constructor(code: string, name: string, message: string) {
+    this.code = code
+    this.name = name
+    this.message = message
+  }
+}
 
 interface User {
   authorized: boolean,
   id: string,
-  email: string,
-  name: string
 }
 
 interface WelcomePropType {
   setUser: (arg0: User) => void,
-  user: User
+  user: User,
+  error: NetworkError,
+  setError: (arg0: NetworkError) => void
+  setShowErrorModal: (arg0: boolean) => void
 }
 
 /**
@@ -20,33 +31,36 @@ interface WelcomePropType {
  * a valid id, it redirects to dashboard. Else it registers a fresh users,
  * gets a cookie, and then redirects to dashboard
  */
-export default function Welcome({ user, setUser }: WelcomePropType) {
+export default function Welcome({ setUser, setError, setShowErrorModal }: WelcomePropType) {
 
   const history = useHistory()
 
   useEffect(() => {
     (async () => {
-
       try {
         const response = await fetch(process.env.REACT_APP_URL + '/users', { method: 'POST', credentials: 'include' })
         const json = await response.json()
-        if (json.success) {
-          setUser({
-            ...user,
-            id: json.id,
-            authorized: true
-          })
-          console.log('useEffect welcome data', json)
-          history.push('/home')
+        if (response.status > 400) {
+          console.log(json)
+          throw new NetworkError(json.code, json.name, json.error)
         }
+        setUser({
+          id: json.id,
+          authorized:json.authorized
+        })
+        history.push('home')
       } catch (error) {
-        console.log('useEffect welcome error', error)
+        setError({
+          code: error.code,
+          name: error.name,
+          message: error.message,
+        })
+        setShowErrorModal(true)
       }
     })()
 
-  }, [user, setUser, history])
+  }, [history, setUser, setError, setShowErrorModal])
 
-  // make a call to api to get cookie, redirect after response
   return (
     <Container>
       <Typography variant="h3" component="h1">

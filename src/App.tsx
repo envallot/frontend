@@ -5,17 +5,34 @@ import {
   Route,
 } from "react-router-dom";
 import { Welcome, Home } from './components'
-import Container from '@material-ui/core/Container';
-
+import { ErrorModal } from './Modals'
+import {
+  Container
+} from '@material-ui/core';
 
 export default function App() {
 
   const [user, setUser] = useState({
     authorized: false,
     id: '',
-    email: '',
-    name: ''
   })
+
+  const [error, setError] = useState({
+    code: '',
+    name: '',
+    message: '',
+  })
+
+  const [showErrorModal, setShowErrorModal] = useState(false)
+
+  const handleCloseErrorModal = () => {
+    setShowErrorModal(false)
+    setError({
+      code: '',
+      name: '',
+      message: ''
+    })
+  }
 
   return (
     <Router>
@@ -25,9 +42,21 @@ export default function App() {
             <Home />
           </Route>
           <Route path="/">
-            <Welcome user={user} setUser={setUser} />
+            <Welcome user={user}
+              setUser={setUser}
+              setError={setError}
+              error={error}
+              setShowErrorModal={setShowErrorModal}
+            />
           </Route>
         </Switch>
+        <ErrorModal
+          open={showErrorModal}
+          handleClose={handleCloseErrorModal}
+          message={error.message}
+          code={error.code}
+          name={error.name}
+        />
       </Container>
     </Router>
   );
