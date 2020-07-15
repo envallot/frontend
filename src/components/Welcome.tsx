@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Typography } from '@material-ui/core';
-import { useHistory } from 'react-router'
+import { Loader } from './index'
+import axios from 'axios'
 
 class NetworkError {
   message: string
@@ -18,7 +19,7 @@ interface User {
   id: string,
 }
 
-interface WelcomePropType {
+interface HomePropType {
   setUser: (arg0: User) => void,
   user: User,
   error: NetworkError,
@@ -31,37 +32,36 @@ interface WelcomePropType {
  * a valid id, it redirects to dashboard. Else it registers a fresh users,
  * gets a cookie, and then redirects to dashboard
  */
-export default function Welcome({ setUser, setError, setShowErrorModal }: WelcomePropType) {
+export default function Home({ setUser, setError, setShowErrorModal }: HomePropType) {
 
-  const history = useHistory()
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    (async () => {
-      try {
-        const response = await fetch(process.env.REACT_APP_URL + '/user', { method: 'POST', credentials: 'include' })
-        const json = await response.json()
-        if (response.status > 400) {
-          console.log(json)
-          throw new NetworkError(response.status.toString(), json.name, json.message)
-        }
-        setUser({
-          id: json.id,
-          authorized:json.authorized
-        })
-        history.push('home')
-      } catch (error) {
-        setError({
-          code: error.code,
-          name: error.name,
-          message: error.message,
-        })
-        setShowErrorModal(true)
-      }
-    })()
 
-  }, [history, setUser, setError, setShowErrorModal])
+    (async () => {
+      setLoading(true)
+        try {
+          const { data } = await axios(process.env.REACT_APP_URL + '/users', { method: 'POST', withCredentials: true })
+          setUser({
+            id: data.id,
+            authorized: data.authorized
+          })
+        } catch (error) {
+          setError({
+            code: error.code,
+            name: error.name,
+            message: error.message,
+          })
+          setShowErrorModal(true)
+        } finally {
+          setLoading(false)
+        }
+      })()
+
+  }, [setUser, setError, setShowErrorModal])
 
   return (
+    loading ? <Loader/> :
     <Container>
       <Typography variant="h3" component="h1">
         WELCOME
@@ -69,5 +69,3 @@ export default function Welcome({ setUser, setError, setShowErrorModal }: Welcom
     </Container>
   )
 }
-
-// export default Welcome
