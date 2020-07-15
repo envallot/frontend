@@ -4,7 +4,7 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import { Welcome, Home } from './components'
+import { Home } from './components'
 import { ErrorModal } from './Modals'
 import {
   Container
@@ -38,11 +38,8 @@ export default function App() {
     <Router>
       <Container maxWidth="lg">
         <Switch>
-          <Route path="/home">
-            <Home />
-          </Route>
           <Route path="/">
-            <Welcome user={user}
+            <Home user={user}
               setUser={setUser}
               setError={setError}
               error={error}
