@@ -6,11 +6,11 @@ import {
 } from "react-router-dom";
 import { Home } from './components'
 import { ErrorModal } from './Modals'
-import {
-  Container
-} from '@material-ui/core';
+import { useStyles} from './styles'
 
 export default function App() {
+
+  const classes = useStyles();
 
   const [user, setUser] = useState({
     authorized: false,
@@ -34,9 +34,10 @@ export default function App() {
     })
   }
 
+ 
   return (
     <Router>
-      <Container maxWidth="lg">
+      <div className = {classes.root}>
         <Switch>
           <Route path="/">
             <Home user={user}
@@ -54,7 +55,7 @@ export default function App() {
           code={error.code}
           name={error.name}
         />
-      </Container>
+      </div>
     </Router>
   );
 }
