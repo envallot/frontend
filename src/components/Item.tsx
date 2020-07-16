@@ -1,0 +1,73 @@
+import React from 'react'
+import Paper from "@material-ui/core/Paper";
+import Grid from "@material-ui/core/Grid";
+import { useStyles } from '../styles'
+import axios from 'axios'
+
+interface ItemPropsType {
+  item: any
+  setSelectedItem: (i: any) => void
+  setItems: (i: any) => void
+  selectedEnvelope: any
+  selectedItem: any
+  items: any
+}
+
+export default function Item({ item, setItems, items, selectedItem, setSelectedItem, selectedEnvelope }: ItemPropsType) {
+
+  /**
+   * handleDragStart selects current item - this is for other componensts,
+   * and removes selected item from 'items' state
+   */
+  const handleDragStart = (event: any) => {
+    const target = event.target
+    setSelectedItem({
+      selected: true,
+      item
+    })
+
+    // const newItems = { ...items }
+    // console.log('newItems', newItems, item)
+    // console.log('newItems.item.id', item.id, newItems[item.id])
+
+    // delete newItems[item.id]
+    // This will prevent drag image from disappearing
+    setTimeout(() => {
+      target.style.display = "none"
+    }, 0)
+
+  }
+
+  /**
+   * handleDragEnd makes the call to update item's envelope_id to currently selected envelope
+   */
+  const handleDragEnd = async () => {
+    console.log('99999999999999')
+    try {
+      console.log('handleDragEnd kept going')
+      const assignedEnv = selectedEnvelope.id
+      const { data } = await axios(process.env.REACT_APP_URL + "/items", {
+        method: "PUT",
+        withCredentials: true,
+        data: { ...selectedItem, envelope_id: assignedEnv }
+      })
+      console.log("updateData", data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const classes = useStyles()
+  return (
+    <Grid
+      key={item.id}
+      item xs={12}
+
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <Paper className={classes.paper}>{item.name}:{item.amount}</Paper>
+    </Grid>
+  )
+}

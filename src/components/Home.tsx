@@ -15,6 +15,7 @@ import {
 import { Loader } from './index'
 import axios from 'axios'
 import { useStyles } from '../styles'
+import { Item } from './index'
 import { ItemFormModal, EnvelopeFormModal } from '../Modals'
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -59,6 +60,8 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
   const [items, setItems] = useState({})
   const [envelopes, setEnvelopes] = useState({})
 
+  const [selectedItem, setSelectedItem] = useState({ selected: false, item: {} })
+  const [selectedEnvelope, setSelectedEnvelope] = useState({ selected: false, envelope: {} })
 
   useEffect(() => {
     console.log('***********************envelopes', envelopes, "items:", items)
@@ -66,7 +69,6 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
 
   const [openItemForm, setOpenItemForm] = useState(false);
   const [openEnvelopeForm, setOpenEnvelopeForm] = useState(false);
-
 
   useEffect(() => {
     const getEnvelopes = async () => {
@@ -81,10 +83,8 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
     const getItems = async () => {
       try {
         const { data } = await axios(process.env.REACT_APP_URL + '/items', { method: "GET", withCredentials: true })
-
         setItems(data)
       } catch (error) {
-
         console.log(error)
       }
     }
@@ -92,9 +92,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
     if (user.authorized) {
       getItems()
       getEnvelopes()
-
     }
-
   }, [user])
 
   useEffect(() => {
@@ -158,11 +156,17 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
                   onClick={() => { setOpenItemForm(true) }}
                 />
               </Grid>
-              {Object.entries(items).filter((item:any)=>item.envelope_id == null).map(([id, item]: any) => {                
+
+              {Object.entries(items).filter((item: any) => item.envelope_id == null).map(([id, item]: any) => {
                 return (
-                  <Grid key={id} item xs={12}>
-                    <Paper className={classes.paper}>{item.name}:{item.amount}</Paper>
-                  </Grid>
+                  <Item
+                    items={items}
+                    selectedEnvelope={selectedEnvelope}
+                    setItems={setItems}
+                    key={id}
+                    setSelectedItem={setSelectedItem} item={item}
+                    selectedItem={selectedItem}
+                  />
                 )
 
               })}
@@ -176,6 +180,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
                   onClick={() => { setOpenEnvelopeForm(true) }}
                 />
               </Grid>
+
               {Object.entries(envelopes).map(([id, envelope]: any) => {
                 return (
                   <Grid key={id} item xs={12}>
