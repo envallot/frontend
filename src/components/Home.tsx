@@ -15,7 +15,9 @@ import {
 import { Loader } from './index'
 import axios from 'axios'
 import { useStyles } from '../styles'
-import { ItemFormModal } from '../Modals'
+import { ItemFormModal, EnvelopeFormModal } from '../Modals'
+import Paper from "@material-ui/core/Paper";
+import Grid from "@material-ui/core/Grid";
 
 class NetworkError {
   message: string
@@ -42,9 +44,12 @@ interface HomePropType {
 }
 
 /**
- * Welcome makes a get request to test backend. If the cookie it sent has
- * a valid id, it redirects to dashboard. Else it registers a fresh users,
- * gets a cookie, and then redirects to dashboard
+ * Home does a lot: it requests a cookie from backend, then authorizes user. Once authorized, we get 
+ * all of the item and envelope data for a user and populate state. It's important to remember there
+ * is no user authentication - if there is no current cookie, we automatically create a new user and 
+ * send down a cookie.
+ * 
+ * @param param0 Porps passed from home
  */
 export default function Home({ setUser, setError, setShowErrorModal, user }: HomePropType) {
 
@@ -54,12 +59,20 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
   const [unassignedItems, setUnassignedItems] = useState({})
   const [envelopes, setEnvelopes] = useState({})
 
+  useEffect(() => {
+    console.log('envelopes', envelopes)
+  }, [envelopes])
+
   const [openItemForm, setOpenItemForm] = useState(false);
+  const [openEnvelopeForm, setOpenEnvelopeForm] = useState(false);
+
 
   useEffect(() => {
     const getEnvelopes = async () => {
       try {
-        const { data } = await axios('/envelopes', { method: "GET", withCredentials: true })
+        const { data } = await axios(process.env.REACT_APP_URL + '/envelopes', { method: "GET", withCredentials: true })
+        console.log('********************getEnvelopes invoked***********************', data)
+
         setUnassignedItems(data.unassignedItems)
         setEnvelopes(data.envsWithItems)
       } catch (error) {
@@ -81,7 +94,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
         const { data } = await axios(process.env.REACT_APP_URL + '/users', { method: 'POST', withCredentials: true })
         setUser({
           id: data.id,
-          authorized: data.authorized
+          authorized: data.success
         })
       } catch (error) {
         setError({
@@ -100,7 +113,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
   return (
     loading ? <Loader /> :
       <Container>
-        <AppBar position="static">
+        <AppBar elevation={0} position="static">
           <Toolbar className={classes.toolbar}>
             <IconButton
               edge="start"
@@ -121,12 +134,51 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
             </IconButton>
           </Toolbar>
         </AppBar>
-        <AddIcon
-          onClick={() => { setOpenItemForm(true) }}
-        />
+
+
+        <Grid container direction="row" spacing={8}>
+          <Grid item xs={6}>
+            <Grid container direction="column" spacing={3}>
+              <Grid item key="item_buttons" xs={12}>
+                <AddIcon
+                  fontSize={"large"}
+                  onClick={() => { setOpenItemForm(true) }}
+                />
+              </Grid>
+              {Object.entries(unassignedItems).map(([id, item]: any) => {
+                // console.log('item', item)
+                return (
+                  <Grid key={id} item xs={12}>
+                    <Paper className={classes.paper}>{item.item_name}:{item.amount}</Paper>
+                  </Grid>)
+              })}
+            </Grid>
+          </Grid>
+          <Grid item xs={6}>
+            <Grid container direction="column" spacing={3}>
+              <Grid item key="item_buttons" xs={12}>
+                <AddIcon
+                  fontSize={"large"}
+                  onClick={() => { setOpenEnvelopeForm(true) }}
+                />
+              </Grid>
+              {Object.entries(envelopes).map(([id, envelope]: any) => {
+                return (
+                  <Grid key={id} item xs={12}>
+                    <Paper className={classes.paper}>{envelope.envelope_name}:{envelope.limit_amount}</Paper>
+                  </Grid>)
+              })}
+            </Grid>
+          </Grid>
+        </Grid>
+
         <ItemFormModal
           open={openItemForm}
           handleClose={() => { setOpenItemForm(false) }}
+        />
+        <EnvelopeFormModal
+          open={openEnvelopeForm}
+          handleClose={() => { setOpenEnvelopeForm(false) }}
         />
       </Container>
   )

@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react'
 import {
   Dialog,
   Button,
-  Avatar, 
-  TextField, 
+  Avatar,
+  TextField,
   Typography,
   Container
 } from '@material-ui/core'
 
 import { makeStyles } from '@material-ui/core/styles';
-import { ShoppingCart } from '@material-ui/icons'
+import { Email } from '@material-ui/icons'
 
 import axios from 'axios'
 
-interface ItemFormModalPropsType {
+interface EnvelopeFormModalPropsType {
   open: boolean
   handleClose: () => void
 }
@@ -26,8 +26,12 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
   },
   avatar: {
-    margin: theme.spacing(1),
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(3),
+    marginLeft: "auto",
+    marginRight: "auto",
     backgroundColor: theme.palette.secondary.main,
+    
   },
   form: {
     width: '100%', // Fix IE 11 issue.
@@ -38,12 +42,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ItemFormModal({ handleClose, open }: ItemFormModalPropsType) {
+export default function EnvelopeFormModal({ handleClose, open }: EnvelopeFormModalPropsType) {
   const classes = useStyles();
 
   const [formState, setFormState] = useState({
     name: "",
-    amount: ""
+    limit_amount: ""
   })
 
   useEffect(() => {
@@ -57,24 +61,23 @@ export default function ItemFormModal({ handleClose, open }: ItemFormModalPropsT
     })
   }
 
-  const handleSubmit = async (e:any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault()
     console.log('onSubmitted')
 
     try {
-      const { data } = await axios(process.env.REACT_APP_URL + '/items', {
+      const { data } = await axios(process.env.REACT_APP_URL + '/envelopes', {
         method: 'POST',
         withCredentials: true,
         data: formState
       })
-      console.log('post item', data)
-      
+      console.log('post env', data)
+
     } catch (error) {
-      console.log('post item error', error)
+      console.log('post env error', error)
     } finally {
       handleClose()
     }
-
   }
 
   return (
@@ -86,10 +89,10 @@ export default function ItemFormModal({ handleClose, open }: ItemFormModalPropsT
     >
       <Container component="main" maxWidth="xs">
         <Avatar className={classes.avatar}>
-          <ShoppingCart />
+          <Email />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Add Item
+          Create Envelope
         </Typography>
         <form onSubmit={handleSubmit} className={classes.form} noValidate>
           <TextField
@@ -98,7 +101,7 @@ export default function ItemFormModal({ handleClose, open }: ItemFormModalPropsT
             required
             fullWidth
             id="name"
-            label="Item Name"
+            label="Envelope Name"
             name="name"
             autoComplete="name"
             autoFocus
@@ -111,12 +114,12 @@ export default function ItemFormModal({ handleClose, open }: ItemFormModalPropsT
             margin="normal"
             required
             fullWidth
-            name="amount"
-            label="Item Amount"
-            type="amount"
-            id="amount"
-            autoComplete="amount in dollars"
-            value={formState.amount}
+            name="limit_amount"
+            label="Limit Amount"
+            type="limit_amount"
+            id="limit_amount"
+            autoComplete="limit amount in dollars"
+            value={formState.limit_amount}
             onChange={handleChange}
           />
           <Button
@@ -126,7 +129,7 @@ export default function ItemFormModal({ handleClose, open }: ItemFormModalPropsT
             color="primary"
             className={classes.submit}
           >
-            Add Item
+            Create Envelope
           </Button>
         </form>
       </Container>

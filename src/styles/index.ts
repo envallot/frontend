@@ -11,7 +11,8 @@ export const theme = createMuiTheme({
   palette: {
     primary: green
   },
-  shadows: Array(25).fill("none") as Shadows,});
+  // shadows: Array(25).fill("none") as Shadows,
+});
 const drawerWidth = 240;
 
 export const useStyles = makeStyles((theme: Theme) => ({
