@@ -9,11 +9,13 @@ import {
 import {
   Menu as MenuIcon,
   Search as SearchIcon,
-  More as MoreIcon
+  More as MoreIcon,
+  Add as AddIcon
 } from '@material-ui/icons';
 import { Loader } from './index'
 import axios from 'axios'
 import { useStyles } from '../styles'
+import { ItemFormModal } from '../Modals'
 
 class NetworkError {
   message: string
@@ -44,10 +46,32 @@ interface HomePropType {
  * a valid id, it redirects to dashboard. Else it registers a fresh users,
  * gets a cookie, and then redirects to dashboard
  */
-export default function Home({ setUser, setError, setShowErrorModal }: HomePropType) {
+export default function Home({ setUser, setError, setShowErrorModal, user }: HomePropType) {
 
   const classes = useStyles()
   const [loading, setLoading] = useState(false)
+
+  const [unassignedItems, setUnassignedItems] = useState({})
+  const [envelopes, setEnvelopes] = useState({})
+
+  const [openItemForm, setOpenItemForm] = useState(false);
+
+  useEffect(() => {
+    const getEnvelopes = async () => {
+      try {
+        const { data } = await axios('/envelopes', { method: "GET", withCredentials: true })
+        setUnassignedItems(data.unassignedItems)
+        setEnvelopes(data.envsWithItems)
+      } catch (error) {
+
+      }
+    }
+    // If user is authorized, we make a call to get items and envelopes data
+    if (user.authorized) {
+      getEnvelopes()
+    }
+
+  }, [user])
 
   useEffect(() => {
 
@@ -73,8 +97,6 @@ export default function Home({ setUser, setError, setShowErrorModal }: HomePropT
 
   }, [setUser, setError, setShowErrorModal])
 
-
-
   return (
     loading ? <Loader /> :
       <Container>
@@ -89,7 +111,7 @@ export default function Home({ setUser, setError, setShowErrorModal }: HomePropT
               <MenuIcon />
             </IconButton>
             <Typography className={classes.title} variant="h5" noWrap>
-              Material-UI
+              Env-Allot: easy budgeting
           </Typography>
             <IconButton aria-label="search" color="inherit">
               <SearchIcon />
@@ -99,7 +121,13 @@ export default function Home({ setUser, setError, setShowErrorModal }: HomePropT
             </IconButton>
           </Toolbar>
         </AppBar>
-
+        <AddIcon
+          onClick={() => { setOpenItemForm(true) }}
+        />
+        <ItemFormModal
+          open={openItemForm}
+          handleClose={() => { setOpenItemForm(false) }}
+        />
       </Container>
   )
 }

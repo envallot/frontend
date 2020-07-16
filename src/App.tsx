@@ -40,7 +40,8 @@ export default function App() {
       <div className = {classes.root}>
         <Switch>
           <Route path="/">
-            <Home user={user}
+            <Home 
+              user={user}
               setUser={setUser}
               setError={setError}
               error={error}
