@@ -187,6 +187,8 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
         </Grid>
 
         <ItemFormModal
+          items={items}
+          setItems={setItems}
           open={openItemForm}
           handleClose={() => { setOpenItemForm(false) }}
         />

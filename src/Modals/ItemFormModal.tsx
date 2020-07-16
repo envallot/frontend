@@ -16,6 +16,8 @@ import axios from 'axios'
 interface ItemFormModalPropsType {
   open: boolean
   handleClose: () => void
+  setItems: (s:any) => void
+  items: any
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -38,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ItemFormModal({ handleClose, open }: ItemFormModalPropsType) {
+export default function ItemFormModal({ handleClose, open, items, setItems }: ItemFormModalPropsType) {
   const classes = useStyles();
 
   const [formState, setFormState] = useState({
@@ -68,6 +70,9 @@ export default function ItemFormModal({ handleClose, open }: ItemFormModalPropsT
         data: formState
       })
       console.log('post item', data)
+      const newItems = {...items}
+      newItems[data.id] = data
+      setItems(newItems)
       
     } catch (error) {
       console.log('post item error', error)
