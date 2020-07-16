@@ -56,12 +56,14 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
   const classes = useStyles()
   const [loading, setLoading] = useState(false)
 
-  const [unassignedItems, setUnassignedItems] = useState({})
+  const [items, setItems] = useState({})
   const [envelopes, setEnvelopes] = useState({})
 
+  // const [envelopes, setEnvelopes] = useState({})
+
   useEffect(() => {
-    console.log('envelopes', envelopes)
-  }, [envelopes])
+    console.log('***********************envelopes', envelopes, "items:", items)
+  }, [envelopes, items])
 
   const [openItemForm, setOpenItemForm] = useState(false);
   const [openEnvelopeForm, setOpenEnvelopeForm] = useState(false);
@@ -71,17 +73,27 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
     const getEnvelopes = async () => {
       try {
         const { data } = await axios(process.env.REACT_APP_URL + '/envelopes', { method: "GET", withCredentials: true })
-        console.log('********************getEnvelopes invoked***********************', data)
+        setEnvelopes(data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
 
-        setUnassignedItems(data.unassignedItems)
-        setEnvelopes(data.envsWithItems)
+    const getItems = async () => {
+      try {
+        const { data } = await axios(process.env.REACT_APP_URL + '/items', { method: "GET", withCredentials: true })
+
+        setItems(data)
       } catch (error) {
 
+        console.log(error)
       }
     }
     // If user is authorized, we make a call to get items and envelopes data
     if (user.authorized) {
+      getItems()
       getEnvelopes()
+
     }
 
   }, [user])
@@ -96,6 +108,8 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
           id: data.id,
           authorized: data.success
         })
+        console.log('user authed', user, data)
+
       } catch (error) {
         setError({
           code: error.code,
@@ -145,12 +159,15 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
                   onClick={() => { setOpenItemForm(true) }}
                 />
               </Grid>
-              {Object.entries(unassignedItems).map(([id, item]: any) => {
-                // console.log('item', item)
+              {Object.entries(items).filter((item:any)=>item.envelope_id == null).map(([id, item]: any) => {
+                console.log('item', item)
+                
                 return (
                   <Grid key={id} item xs={12}>
-                    <Paper className={classes.paper}>{item.item_name}:{item.amount}</Paper>
-                  </Grid>)
+                    <Paper className={classes.paper}>{item.name}:{item.amount}</Paper>
+                  </Grid>
+                )
+
               })}
             </Grid>
           </Grid>
@@ -165,7 +182,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
               {Object.entries(envelopes).map(([id, envelope]: any) => {
                 return (
                   <Grid key={id} item xs={12}>
-                    <Paper className={classes.paper}>{envelope.envelope_name}:{envelope.limit_amount}</Paper>
+                    <Paper className={classes.paper}>{envelope.name}:{envelope.limit_amount}</Paper>
                   </Grid>)
               })}
             </Grid>
