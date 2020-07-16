@@ -59,7 +59,6 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
   const [items, setItems] = useState({})
   const [envelopes, setEnvelopes] = useState({})
 
-  // const [envelopes, setEnvelopes] = useState({})
 
   useEffect(() => {
     console.log('***********************envelopes', envelopes, "items:", items)
@@ -159,9 +158,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
                   onClick={() => { setOpenItemForm(true) }}
                 />
               </Grid>
-              {Object.entries(items).filter((item:any)=>item.envelope_id == null).map(([id, item]: any) => {
-                console.log('item', item)
-                
+              {Object.entries(items).filter((item:any)=>item.envelope_id == null).map(([id, item]: any) => {                
                 return (
                   <Grid key={id} item xs={12}>
                     <Paper className={classes.paper}>{item.name}:{item.amount}</Paper>
@@ -194,6 +191,8 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
           handleClose={() => { setOpenItemForm(false) }}
         />
         <EnvelopeFormModal
+          envelopes={envelopes}
+          setEnvelopes={setEnvelopes}
           open={openEnvelopeForm}
           handleClose={() => { setOpenEnvelopeForm(false) }}
         />

@@ -16,6 +16,8 @@ import axios from 'axios'
 interface EnvelopeFormModalPropsType {
   open: boolean
   handleClose: () => void
+  setEnvelopes: (arg: any) => void
+  envelopes: any
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -31,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "auto",
     marginRight: "auto",
     backgroundColor: theme.palette.secondary.main,
-    
+
   },
   form: {
     width: '100%', // Fix IE 11 issue.
@@ -42,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EnvelopeFormModal({ handleClose, open }: EnvelopeFormModalPropsType) {
+export default function EnvelopeFormModal({ handleClose, open, setEnvelopes, envelopes }: EnvelopeFormModalPropsType) {
   const classes = useStyles();
 
   const [formState, setFormState] = useState({
@@ -71,6 +73,12 @@ export default function EnvelopeFormModal({ handleClose, open }: EnvelopeFormMod
         withCredentials: true,
         data: formState
       })
+      console.log('data', data)
+      console.log('envelopes', envelopes)
+      const newEnvelopes = { ...envelopes }
+      newEnvelopes[data.id] = data
+      console.log('newEnvs', newEnvelopes)
+      setEnvelopes(newEnvelopes)
       console.log('post env', data)
 
     } catch (error) {
