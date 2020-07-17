@@ -90,6 +90,13 @@ export const useStyles = makeStyles((theme: Theme) => ({
     overflow: 'auto',
     flexDirection: 'column',
   },
+  hovering: {
+    padding: theme.spacing(2),
+    display: 'flex',
+    overflow: 'auto',
+    flexDirection: 'column',
+    backgroundColor: "pink"
+  },
   fixedHeight: {
     height: 240,
   },

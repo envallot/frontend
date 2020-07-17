@@ -26,12 +26,6 @@ export default function Item({ item, setItems, items, selectedItem, setSelectedI
       item
     })
 
-    // const newItems = { ...items }
-    // console.log('newItems', newItems, item)
-    // console.log('newItems.item.id', item.id, newItems[item.id])
-
-    // delete newItems[item.id]
-    // This will prevent drag image from disappearing
     setTimeout(() => {
       target.style.display = "none"
     }, 0)
@@ -41,19 +35,23 @@ export default function Item({ item, setItems, items, selectedItem, setSelectedI
   /**
    * handleDragEnd makes the call to update item's envelope_id to currently selected envelope
    */
-  const handleDragEnd = async () => {
-    console.log('99999999999999')
-    try {
-      console.log('handleDragEnd kept going')
-      const assignedEnv = selectedEnvelope.id
-      const { data } = await axios(process.env.REACT_APP_URL + "/items", {
-        method: "PUT",
-        withCredentials: true,
-        data: { ...selectedItem, envelope_id: assignedEnv }
-      })
-      console.log("updateData", data)
-    } catch (error) {
-      console.log(error)
+  const handleDragEnd = async (event:any) => {
+    if (selectedEnvelope.selected) {
+      try {
+        console.log('handleDragEnd kept going')
+        const assignedEnv = selectedEnvelope.id
+        const { data } = await axios(process.env.REACT_APP_URL + "/items", {
+          method: "PUT",
+          withCredentials: true,
+          data: { ...selectedItem, envelope_id: assignedEnv }
+        })
+        console.log("updateData", data)
+      } catch (error) {
+        console.log(error)
+      }
+    } else {
+      event.target.style.display = "block"
+      console.log('dropped without envelope')
     }
   }
 

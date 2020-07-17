@@ -12,10 +12,9 @@ import {
   More as MoreIcon,
   Add as AddIcon
 } from '@material-ui/icons';
-import { Loader } from './index'
+import { Loader, Item, Envelope } from './index'
 import axios from 'axios'
 import { useStyles } from '../styles'
-import { Item } from './index'
 import { ItemFormModal, EnvelopeFormModal } from '../Modals'
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
@@ -173,7 +172,11 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
             </Grid>
           </Grid>
           <Grid item xs={6}>
-            <Grid container direction="column" spacing={3}>
+            <Grid
+
+              container direction="column" spacing={3
+              }>
+              {/* <Grid container direction="column" spacing={3}> */}
               <Grid item key="item_buttons" xs={12}>
                 <AddIcon
                   fontSize={"large"}
@@ -183,12 +186,17 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
 
               {Object.entries(envelopes).map(([id, envelope]: any) => {
                 return (
-                  <Grid key={id} item xs={12}>
-                    <Paper className={classes.paper}>{envelope.name}:{envelope.limit_amount}</Paper>
-                  </Grid>)
+                  <Envelope
+                    key={id}
+                    selectedEnvelope={selectedEnvelope}
+                    envelope={envelope}
+                    setSelectedEnvelope={setSelectedEnvelope}
+                  />
+                )
               })}
             </Grid>
           </Grid>
+          {/* </Grid> */}
         </Grid>
 
         <ItemFormModal
