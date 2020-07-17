@@ -46,6 +46,11 @@ export default function Item({ item, setItems, items, selectedItem, setSelectedI
           withCredentials: true,
           data: { ...selectedItem.item, envelope_id: assignedEnv }
         })
+
+        const newItems = [...items]
+        const index = newItems.indexOf(item)
+        newItems[index] = {...item, envelope_id : selectedEnvelope.envelope.id}
+        setItems(newItems)
       } catch (error) {
         console.log(error)
       } finally {

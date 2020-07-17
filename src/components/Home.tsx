@@ -15,7 +15,7 @@ import {
 import { Loader, Item, Envelope } from './index'
 import axios from 'axios'
 import { useStyles } from '../styles'
-import { ItemFormModal, EnvelopeFormModal } from '../Modals'
+import { ItemFormModal, EnvelopeFormModal, EnvelopeDetailModal } from '../Modals'
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 
@@ -68,6 +68,9 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
 
   const [openItemForm, setOpenItemForm] = useState(false);
   const [openEnvelopeForm, setOpenEnvelopeForm] = useState(false);
+  const [envelopeDetail, setEnvelopeDetail] = useState({ open: false, envelope:{} });
+
+
 
   useEffect(() => {
     const getEnvelopes = async () => {
@@ -195,6 +198,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
                     selectedEnvelope={selectedEnvelope}
                     envelope={envelope}
                     setSelectedEnvelope={setSelectedEnvelope}
+                    setEnvelopeDetail={setEnvelopeDetail}
                   />
                 )
               })}
@@ -214,6 +218,13 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
           setEnvelopes={setEnvelopes}
           open={openEnvelopeForm}
           handleClose={() => { setOpenEnvelopeForm(false) }}
+        />
+        <EnvelopeDetailModal
+          open={envelopeDetail.open}
+          envelope={envelopeDetail.envelope}
+          setItems={setItems}
+          items={items}
+          handleClose={() => { setEnvelopeDetail({ open: false, envelope: {} }) }}
         />
       </Container>
   )

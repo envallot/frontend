@@ -11,9 +11,10 @@ interface EnvelopePropsType {
   // selectedEnvelope: any
   // selectedItem: any
   setSelectedEnvelope: (e: any) => void
+  setEnvelopeDetail:  (e: any) => void
 }
 
-export default function Envelope({ envelope, setSelectedEnvelope, selectedEnvelope }: EnvelopePropsType) {
+export default function Envelope({ envelope, setSelectedEnvelope, selectedEnvelope, setEnvelopeDetail }: EnvelopePropsType) {
 
   const handleDragOver = (event: any) => {
     event.preventDefault()
@@ -38,6 +39,7 @@ export default function Envelope({ envelope, setSelectedEnvelope, selectedEnvelo
   return (
     <Grid
       item xs={12}
+      onClick={()=> setEnvelopeDetail({open: true, envelope})}
 
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
