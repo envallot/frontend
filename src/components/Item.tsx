@@ -8,12 +8,14 @@ interface ItemPropsType {
   item: any
   setSelectedItem: (i: any) => void
   setItems: (i: any) => void
+  setSelectedEnvelope: (e:any) => void
   selectedEnvelope: any
   selectedItem: any
   items: any
+  
 }
 
-export default function Item({ item, setItems, items, selectedItem, setSelectedItem, selectedEnvelope }: ItemPropsType) {
+export default function Item({ item, setItems, items, selectedItem, setSelectedItem, selectedEnvelope, setSelectedEnvelope }: ItemPropsType) {
 
   /**
    * handleDragStart selects current item - this is for other componensts,
@@ -29,27 +31,28 @@ export default function Item({ item, setItems, items, selectedItem, setSelectedI
     setTimeout(() => {
       target.style.display = "none"
     }, 0)
-
   }
 
   /**
    * handleDragEnd makes the call to update item's envelope_id to currently selected envelope
    */
   const handleDragEnd = async (event:any) => {
-    if (selectedEnvelope.selected) {
+    if (selectedEnvelope.selected && selectedEnvelope.selected) {
       try {
-        console.log('handleDragEnd kept going')
         const assignedEnv = selectedEnvelope.envelope.id
-        console.log('assignedEnv', { ...selectedItem.item, envelope_id: assignedEnv })
         
         const { data } = await axios(process.env.REACT_APP_URL + "/items", {
           method: "PUT",
           withCredentials: true,
           data: { ...selectedItem.item, envelope_id: assignedEnv }
         })
-        console.log("updateData", data)
       } catch (error) {
         console.log(error)
+      } finally {
+        setSelectedEnvelope({
+          selected: false,
+          envelope: {}
+        })
       }
     } else {
       event.target.style.display = "block"

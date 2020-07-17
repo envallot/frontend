@@ -17,18 +17,17 @@ export default function Envelope({ envelope, setSelectedEnvelope, selectedEnvelo
 
   const handleDragOver = (event: any) => {
     event.preventDefault()
+
     if (!selectedEnvelope.selected || selectedEnvelope.envelope.id !== envelope.id) {
       setSelectedEnvelope({
         selected: true,
         envelope
       })
     }
-
   }
 
   const handleDragLeave = (event: any) => {
     event.preventDefault()
-
     setSelectedEnvelope({
       selected: false,
       envelope: {}

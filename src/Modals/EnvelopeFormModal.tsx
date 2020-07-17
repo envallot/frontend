@@ -73,13 +73,7 @@ export default function EnvelopeFormModal({ handleClose, open, setEnvelopes, env
         withCredentials: true,
         data: formState
       })
-      console.log('data', data)
-      console.log('envelopes', envelopes)
-      const newEnvelopes = { ...envelopes }
-      newEnvelopes[data.id] = data
-      console.log('newEnvs', newEnvelopes)
-      setEnvelopes(newEnvelopes)
-      console.log('post env', data)
+      setEnvelopes([data, ...envelopes])
 
     } catch (error) {
       console.log('post env error', error)

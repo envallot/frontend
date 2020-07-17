@@ -162,6 +162,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
                 // We only show the envelopes which have a null envelope_id, the rest go into their envelope
                 return !item.envelope_id ? (
                   <Item
+                    setSelectedEnvelope={setSelectedEnvelope}
                     items={items}
                     selectedEnvelope={selectedEnvelope}
                     setItems={setItems}

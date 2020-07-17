@@ -64,15 +64,14 @@ export default function ItemFormModal({ handleClose, open, items, setItems }: It
     console.log('onSubmitted')
 
     try {
+      
       const { data } = await axios(process.env.REACT_APP_URL + '/items', {
         method: 'POST',
         withCredentials: true,
         data: formState
       })
-      console.log('post item', data)
-      const newItems = {...items}
-      newItems[data.id] = data
-      setItems(newItems)
+      
+      setItems([data, ...items])
       
     } catch (error) {
       console.log('post item error', error)
