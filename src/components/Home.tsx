@@ -5,14 +5,15 @@ import {
   AppBar,
   Toolbar,
   IconButton,
+
 } from '@material-ui/core';
 import {
   Menu as MenuIcon,
   Search as SearchIcon,
   More as MoreIcon,
-  Add as AddIcon
+  Add as AddIcon,
 } from '@material-ui/icons';
-import { Loader, Item, Envelope } from './index'
+import { Loader, Item, Envelope, DeleteIcon } from './index'
 import axios from 'axios'
 import { useStyles } from '../styles'
 import { ItemFormModal, EnvelopeFormModal, EnvelopeDetailModal } from '../Modals'
@@ -61,6 +62,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
 
   const [selectedItem, setSelectedItem] = useState({ selected: false, item: {} })
   const [selectedEnvelope, setSelectedEnvelope] = useState({ selected: false, envelope: {} })
+  const [deleteSelected, setDeleteSelected] = useState(false)
 
   useEffect(() => {
     console.log('***********************envelopes', envelopes, "items:", items)
@@ -68,7 +70,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
 
   const [openItemForm, setOpenItemForm] = useState(false);
   const [openEnvelopeForm, setOpenEnvelopeForm] = useState(false);
-  const [envelopeDetail, setEnvelopeDetail] = useState({ open: false, envelope:{} });
+  const [envelopeDetail, setEnvelopeDetail] = useState({ open: false, envelope: {} });
 
 
 
@@ -147,16 +149,25 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
             </IconButton>
           </Toolbar>
         </AppBar>
-
+        <Grid justify="center" container>
+          
+            <DeleteIcon
+              deleteSelected={deleteSelected}
+              setDeleteSelected={setDeleteSelected}
+            />
+          {/* </Grid> */}
+        </Grid>
 
         <Grid container direction="row" spacing={8}>
           <Grid item xs={6}>
             <Grid container direction="column" spacing={3}>
-              <Grid item key="item_buttons" xs={12}>
+              <Grid item container key="item_buttons" xs={12} >
                 <AddIcon
                   fontSize={"large"}
                   onClick={() => { setOpenItemForm(true) }}
+
                 />
+                <Typography display="block" variant="h4" component="h2">Items</Typography>
               </Grid>
 
               {/* {Object.entries(items).filter((item: any) => item.envelope_id == null).map(([id, item]: any) => { */}
@@ -172,6 +183,8 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
                     key={item.id}
                     setSelectedItem={setSelectedItem} item={item}
                     selectedItem={selectedItem}
+                    deleteSelected={deleteSelected}
+                    setDeleteSelected={setDeleteSelected}
                   />
                 ) : null
               })}
@@ -179,15 +192,16 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
           </Grid>
           <Grid item xs={6}>
             <Grid
-
               container direction="column" spacing={3
               }>
               {/* <Grid container direction="column" spacing={3}> */}
-              <Grid item key="item_buttons" xs={12}>
+              <Grid item container key="item_buttons" xs={12}>
                 <AddIcon
                   fontSize={"large"}
                   onClick={() => { setOpenEnvelopeForm(true) }}
                 />
+                <Typography display="block" variant="h4" component="h2">Envelopes</Typography>
+
               </Grid>
 
               {/* {Object.entries(envelopes).map(([id, envelope]: any) => { */}

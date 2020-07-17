@@ -100,4 +100,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
   fixedHeight: {
     height: 240,
   },
+  center: {
+    marginLeft: "auto",
+    marginRight: "auto"
+  }
 }));

@@ -45,6 +45,9 @@ export default function Envelope({ envelope, setSelectedEnvelope, selectedEnvelo
       onDragLeave={handleDragLeave}
     >
       <Paper
+        style={{
+          pointerEvents: "none"
+        }}
         className={selectedEnvelope.envelope.id === envelope.id ? classes.hovering : classes.paper}
       >
         {envelope.name}:{envelope.limit_amount}

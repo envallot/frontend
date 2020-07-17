@@ -1,4 +1,4 @@
-import React, {useRef} from 'react'
+import React, { useRef } from 'react'
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import { useStyles } from '../styles'
@@ -8,14 +8,25 @@ interface ItemPropsType {
   item: any
   setSelectedItem: (i: any) => void
   setItems: (i: any) => void
-  setSelectedEnvelope: (e:any) => void
+  setSelectedEnvelope: (e: any) => void
   selectedEnvelope: any
   selectedItem: any
   items: any
-  
+  deleteSelected: boolean
+  setDeleteSelected: (b: boolean) => void
 }
 
-export default function Item({ item, setItems, items, selectedItem, setSelectedItem, selectedEnvelope, setSelectedEnvelope }: ItemPropsType) {
+export default function Item({
+  item,
+  setItems,
+  items,
+  selectedItem,
+  setSelectedItem,
+  selectedEnvelope,
+  setSelectedEnvelope,
+  deleteSelected,
+  setDeleteSelected
+}: ItemPropsType) {
 
   /**
    * handleDragStart selects current item - this is for other componensts,
@@ -40,15 +51,34 @@ export default function Item({ item, setItems, items, selectedItem, setSelectedI
    * 
    * @param event 
    */
-  const handleDragEnd = async (event:any) => {
-    if (selectedEnvelope.selected && selectedEnvelope.selected) {
+  const handleDragEnd = async (event: any) => {
+    if (deleteSelected) {
+      try {
+        setDeleteSelected(false)
+        console.log('making delete req')
+        const newItems = [...items]
+        const index = newItems.indexOf(item)
+        newItems.splice(index, 1)
+        setItems(newItems)
+
+        await axios(process.env.REACT_APP_URL + `/items/${item.id}`, {
+          method: "DELETE",
+          withCredentials: true
+        })
+
+      } catch (error) {
+        console.log(error)
+      }
+    } else if (selectedEnvelope.selected && selectedEnvelope.selected) {
+      console.log('making assign req')
+
       try {
         // Hold reference to our envelope_id here
-        assignedEnv.current = selectedEnvelope.envelope.id 
+        assignedEnv.current = selectedEnvelope.envelope.id
 
         // Unselect envelope to keep UI snappy
-        setSelectedEnvelope({ 
-          selected: false, 
+        setSelectedEnvelope({
+          selected: false,
           envelope: {}
         })
 
@@ -56,9 +86,9 @@ export default function Item({ item, setItems, items, selectedItem, setSelectedI
         const index = newItems.indexOf(item)
         // If we did not use useRef, we would have to unselect envelope after promise resolves, making
         // UI feel slow and sluggish
-        newItems[index] = {...item, envelope_id : assignedEnv.current} 
+        newItems[index] = { ...item, envelope_id: assignedEnv.current }
         setItems(newItems)
-        
+
         const { data } = await axios(process.env.REACT_APP_URL + "/items", {
           method: "PUT",
           withCredentials: true,
@@ -67,7 +97,7 @@ export default function Item({ item, setItems, items, selectedItem, setSelectedI
 
       } catch (error) {
         console.log(error)
-      } 
+      }
 
     } else {
       event.target.style.display = "block"
@@ -85,7 +115,11 @@ export default function Item({ item, setItems, items, selectedItem, setSelectedI
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <Paper className={classes.paper}>{item.name}:{item.amount}</Paper>
+      <Paper
+        style={{ pointerEvents: "none" }}
+        className={classes.paper}>
+        {item.name}:{item.amount}
+      </Paper>
     </Grid>
   )
 }
