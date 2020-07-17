@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useRef} from 'react'
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import { useStyles } from '../styles'
@@ -33,13 +33,31 @@ export default function Item({ item, setItems, items, selectedItem, setSelectedI
     }, 0)
   }
 
+  const assignedEnv = useRef()
+
   /**
    * handleDragEnd makes the call to update item's envelope_id to currently selected envelope
+   * 
+   * @param event 
    */
   const handleDragEnd = async (event:any) => {
     if (selectedEnvelope.selected && selectedEnvelope.selected) {
       try {
-        const assignedEnv = selectedEnvelope.envelope.id
+        // Hold reference to our envelope_id here
+        assignedEnv.current = selectedEnvelope.envelope.id 
+
+        // Unselect envelope to keep UI snappy
+        setSelectedEnvelope({ 
+          selected: false, 
+          envelope: {}
+        })
+
+        const newItems = [...items]
+        const index = newItems.indexOf(item)
+        // If we did not use useRef, we would have to unselect envelope after promise resolves, making
+        // UI feel slow and sluggish
+        newItems[index] = {...item, envelope_id : assignedEnv.current} 
+        setItems(newItems)
         
         const { data } = await axios(process.env.REACT_APP_URL + "/items", {
           method: "PUT",
@@ -47,18 +65,10 @@ export default function Item({ item, setItems, items, selectedItem, setSelectedI
           data: { ...selectedItem.item, envelope_id: assignedEnv }
         })
 
-        const newItems = [...items]
-        const index = newItems.indexOf(item)
-        newItems[index] = {...item, envelope_id : selectedEnvelope.envelope.id}
-        setItems(newItems)
       } catch (error) {
         console.log(error)
-      } finally {
-        setSelectedEnvelope({
-          selected: false,
-          envelope: {}
-        })
-      }
+      } 
+
     } else {
       event.target.style.display = "block"
       console.log('dropped without envelope')
