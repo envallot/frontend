@@ -39,11 +39,13 @@ export default function Item({ item, setItems, items, selectedItem, setSelectedI
     if (selectedEnvelope.selected) {
       try {
         console.log('handleDragEnd kept going')
-        const assignedEnv = selectedEnvelope.id
+        const assignedEnv = selectedEnvelope.envelope.id
+        console.log('assignedEnv', { ...selectedItem.item, envelope_id: assignedEnv })
+        
         const { data } = await axios(process.env.REACT_APP_URL + "/items", {
           method: "PUT",
           withCredentials: true,
-          data: { ...selectedItem, envelope_id: assignedEnv }
+          data: { ...selectedItem.item, envelope_id: assignedEnv }
         })
         console.log("updateData", data)
       } catch (error) {
