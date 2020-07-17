@@ -56,8 +56,8 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
   const classes = useStyles()
   const [loading, setLoading] = useState(false)
 
-  const [items, setItems] = useState({})
-  const [envelopes, setEnvelopes] = useState({})
+  const [items, setItems] = useState([])
+  const [envelopes, setEnvelopes] = useState([])
 
   const [selectedItem, setSelectedItem] = useState({ selected: false, item: {} })
   const [selectedEnvelope, setSelectedEnvelope] = useState({ selected: false, envelope: {} })
@@ -156,18 +156,20 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
                 />
               </Grid>
 
-              {Object.entries(items).filter((item: any) => item.envelope_id == null).map(([id, item]: any) => {
-                return (
+              {/* {Object.entries(items).filter((item: any) => item.envelope_id == null).map(([id, item]: any) => { */}
+
+              {items.map((item: any) => {
+                // We only show the envelopes which have a null envelope_id, the rest go into their envelope
+                return !item.envelope_id ? (
                   <Item
                     items={items}
                     selectedEnvelope={selectedEnvelope}
                     setItems={setItems}
-                    key={id}
+                    key={item.id}
                     setSelectedItem={setSelectedItem} item={item}
                     selectedItem={selectedItem}
                   />
-                )
-
+                ) : null
               })}
             </Grid>
           </Grid>
@@ -184,10 +186,11 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
                 />
               </Grid>
 
-              {Object.entries(envelopes).map(([id, envelope]: any) => {
+              {/* {Object.entries(envelopes).map(([id, envelope]: any) => { */}
+              {envelopes.map((envelope: any) => {
                 return (
                   <Envelope
-                    key={id}
+                    key={envelope.id}
                     selectedEnvelope={selectedEnvelope}
                     envelope={envelope}
                     setSelectedEnvelope={setSelectedEnvelope}
