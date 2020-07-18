@@ -78,7 +78,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
   const [itemsBannerSelected, setItemsBannerSelected] = useState(false)
 
   useEffect(() => console.log('itemsBannerSelected', itemsBannerSelected), [itemsBannerSelected])
-  
+
   useEffect(() => console.log('deleteSelected', deleteSelected), [deleteSelected])
 
   const unassignItems = (envelopeID: number) => {
@@ -177,23 +177,11 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
             <Grid container direction="column" spacing={3}>
               {/* <Grid item container key="item_buttons" xs={12} > */}
               <ItemsBanner
+                setOpenItemForm={setOpenItemForm}
+                selectedEnvelope={selectedEnvelope}
                 setItemsBannerSelected={setItemsBannerSelected}
                 itemsBannerSelected={itemsBannerSelected}
-              >
-
-                <AddIcon
-                  style={{ pointerEvents: "none" }}
-                  fontSize={"large"}
-                  onClick={() => { setOpenItemForm(true) }}
-
-                />
-                <Typography
-                  style={{ pointerEvents: "none" }}
-                  display="block" variant="h4" component="h2">Items</Typography>
-              </ItemsBanner>
-              {/* </Grid> */}
-
-              {/* {Object.entries(items).filter((item: any) => item.envelope_id == null).map(([id, item]: any) => { */}
+              />
 
               {items.map((item: any) => {
                 // We only show the envelopes which have a null envelope_id, the rest go into their envelope
@@ -218,13 +206,26 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
               container direction="column" spacing={3
               }>
               {/* <Grid container direction="column" spacing={3}> */}
-              <Grid item container key="item_buttons" xs={12}>
+              <Grid
+                item
+                container
+                key="item_buttons"
+                xs={12}
+              >
                 <AddIcon
+                  // className={selectedEnvelope.selected ? classes.noEvents : ''}
                   fontSize={"large"}
                   onClick={() => { setOpenEnvelopeForm(true) }}
                 />
-                <Typography display="block" variant="h4" component="h2">Envelopes</Typography>
+                <Typography
+                  // className={selectedEnvelope.selected ? classes.noEvents : ''}
+                  display="block"
+                  variant="h4"
+                  component="h2"
 
+                >
+                  Envelopes
+                </Typography>
               </Grid>
 
               {/* {Object.entries(envelopes).map(([id, envelope]: any) => { */}

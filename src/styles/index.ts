@@ -51,6 +51,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
   menuButtonHidden: {
     display: 'none',
   },
+  noEvents: {
+    pointerEvents:"none"
+  },
   title: {
     flexGrow: 1,
   },
@@ -95,7 +98,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     overflow: 'auto',
     flexDirection: 'column',
-    backgroundColor: "pink"
+    backgroundColor: "pink",
+    pointerEvents:"none"
   },
   fixedHeight: {
     height: 240,

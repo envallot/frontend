@@ -1,13 +1,16 @@
 import React, { ReactNode } from 'react'
-import { Grid } from '@material-ui/core'
+import { Grid, Typography } from '@material-ui/core'
+import { Add as AddIcon } from '@material-ui/icons'
+import { useStyles } from '../styles'
 
 interface ItemsBannerProps {
-  children: ReactNode[]
   setItemsBannerSelected: (b: boolean) => void
   itemsBannerSelected: boolean
+  setOpenItemForm: (b: boolean) => void
+  selectedEnvelope: any
 }
 
-export default function ItemsBanner({ children, setItemsBannerSelected, itemsBannerSelected }: ItemsBannerProps) {
+export default function ItemsBanner({ selectedEnvelope, setOpenItemForm, setItemsBannerSelected, itemsBannerSelected }: ItemsBannerProps) {
 
   const handleDragOver = (event: any) => {
     event.preventDefault()
@@ -19,21 +22,38 @@ export default function ItemsBanner({ children, setItemsBannerSelected, itemsBan
     setItemsBannerSelected(false)
   }
 
+  const getStyles = () => {
+    return selectedEnvelope ? { pointerEvents: "none" } : {}
+  }
+  const classes = useStyles()
+
   return (
     <Grid
-      style={{
-        color: itemsBannerSelected ? "pink" : "black"
-      }}
       item
       container
       key="item_buttons"
       xs={12}
-
-      // draggable
+      style={{
+        color: itemsBannerSelected ? "pink" : "black"
+      }}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
     >
-      {children}
+      <AddIcon
+        // className={selectedEnvelope.selected ? classes.noEvents : ''}
+        fontSize={"large"}
+        onClick={() => { setOpenItemForm(true) }}
+      />
+      <Typography
+        // className={selectedEnvelope.selected ? classes.noEvents : ''}
+        display="block"
+        variant="h4"
+        component="h2"
+
+      >
+        Items
+      </Typography>
+
     </Grid>
   )
 }
