@@ -82,7 +82,6 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
   useEffect(() => console.log('deleteSelected', deleteSelected), [deleteSelected])
 
   const unassignItems = (envelopeID: number) => {
-    // const newItems = [...items]
     const newItems = items.map((item: any) => {
       return item.envelope_id === envelopeID ? { ...item, envelope_id: null } : item
     })

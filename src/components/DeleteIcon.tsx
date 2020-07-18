@@ -19,7 +19,9 @@ export default function DeleteIcon({ setDeleteSelected, deleteSelected }: Delete
 
   const handleDragLeave = (event: any) => {
     console.log('leaving delete icon')
-    event.preventDefault()
+    // event.preventDefault()
+    setDeleteSelected(false)
+
   }
 
   return (
