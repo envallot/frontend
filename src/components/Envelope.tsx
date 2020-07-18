@@ -16,6 +16,7 @@ interface EnvelopePropsType {
   setDeleteSelected: (d: any) => void
   setItemsBannerSelected: (b: boolean) => void
   itemsBannerSelected: boolean
+  unassignItems: (e:any) => void
 }
 
 export default function Envelope({
@@ -29,7 +30,8 @@ export default function Envelope({
   selectedItem,
   setDeleteSelected,
   setItemsBannerSelected,
-  itemsBannerSelected
+  itemsBannerSelected,
+  unassignItems
 }: EnvelopePropsType) {
 
   const handleDragOver = (event: any) => {
@@ -92,8 +94,9 @@ export default function Envelope({
         console.log(error)
       }
     } else if (itemsBannerSelected){
+      console.log('itemsBannerSelected on envelope drag end')
       setItemsBannerSelected(false)
-      
+      unassignItems(envelope.id)
       try {
         await axios(process.env.REACT_APP_URL + `/envelopes/${envelope.id}`, {
           method: "DELETE",

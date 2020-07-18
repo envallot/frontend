@@ -9,19 +9,20 @@ interface ItemsBannerProps {
 
 export default function ItemsBanner({ children, setItemsBannerSelected, itemsBannerSelected }: ItemsBannerProps) {
 
-  const handleDragEnter = (event: any) => {
+  const handleDragOver = (event: any) => {
+    event.preventDefault()
     setItemsBannerSelected(true)
   }
 
   const handleDragLeave = (event: any) => {
     console.log('items banner drag leave')
-    setTimeout(()=>setItemsBannerSelected(false), 0)
+    setItemsBannerSelected(false)
   }
 
   return (
     <Grid
       style={{
-        color:itemsBannerSelected ? "pink" : "black"
+        color: itemsBannerSelected ? "pink" : "black"
       }}
       item
       container
@@ -29,7 +30,7 @@ export default function ItemsBanner({ children, setItemsBannerSelected, itemsBan
       xs={12}
 
       // draggable
-      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
     >
       {children}

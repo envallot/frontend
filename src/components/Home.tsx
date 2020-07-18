@@ -57,7 +57,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
   const classes = useStyles()
   const [loading, setLoading] = useState(false)
 
-  const [items, setItems] = useState([])
+  const [items, setItems] = useState([] as any)
   const [envelopes, setEnvelopes] = useState([])
 
   const [selectedItem, setSelectedItem] = useState({ selected: false, item: {} })
@@ -77,6 +77,17 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
   const [envelopeDetail, setEnvelopeDetail] = useState({ open: false, envelope: {} });
   const [itemsBannerSelected, setItemsBannerSelected] = useState(false)
 
+  useEffect(() => console.log('itemsBannerSelected', itemsBannerSelected), [itemsBannerSelected])
+  
+  useEffect(() => console.log('deleteSelected', deleteSelected), [deleteSelected])
+
+  const unassignItems = (envelopeID: number) => {
+    // const newItems = [...items]
+    const newItems = items.map((item: any) => {
+      return item.envelope_id === envelopeID ? { ...item, envelope_id: null } : item
+    })
+    setItems(newItems)
+  }
 
   useEffect(() => {
     const getEnvelopes = async () => {
@@ -172,11 +183,14 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
               >
 
                 <AddIcon
+                  style={{ pointerEvents: "none" }}
                   fontSize={"large"}
                   onClick={() => { setOpenItemForm(true) }}
 
                 />
-                <Typography display="block" variant="h4" component="h2">Items</Typography>
+                <Typography
+                  style={{ pointerEvents: "none" }}
+                  display="block" variant="h4" component="h2">Items</Typography>
               </ItemsBanner>
               {/* </Grid> */}
 
@@ -218,6 +232,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
               {envelopes.map((envelope: any) => {
                 return (
                   <Envelope
+                    unassignItems={unassignItems}
                     key={envelope.id}
                     selectedEnvelope={selectedEnvelope}
                     envelope={envelope}

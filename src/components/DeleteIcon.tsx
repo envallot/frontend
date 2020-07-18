@@ -12,7 +12,7 @@ interface DeleteIconPropType {
 
 export default function DeleteIcon({ setDeleteSelected, deleteSelected }: DeleteIconPropType) {
 
-  const handleDragEnter = (event: any) => {
+  const handleDragOver = (event: any) => {
     event.preventDefault()
     setDeleteSelected(true)
   }
@@ -20,8 +20,6 @@ export default function DeleteIcon({ setDeleteSelected, deleteSelected }: Delete
   const handleDragLeave = (event: any) => {
     console.log('leaving delete icon')
     event.preventDefault()
-
-    setTimeout(() => setDeleteSelected(false), 0)
   }
 
   return (
@@ -34,7 +32,7 @@ export default function DeleteIcon({ setDeleteSelected, deleteSelected }: Delete
       item
       justify="center"
       alignItems="center"
-      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
     >
 
