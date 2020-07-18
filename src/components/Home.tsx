@@ -270,6 +270,8 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
           envelope={envelopeDetail.envelope}
           setItems={setItems}
           items={items}
+          setEnvelopes={setEnvelopes}
+          envelopes={envelopes}
           handleClose={() => { setEnvelopeDetail({ open: false, envelope: {} }) }}
         />
       </Container>

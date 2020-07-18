@@ -92,6 +92,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     overflow: 'auto',
     flexDirection: 'column',
+    fontSize: "1.1rem"
+
   },
   hovering: {
     padding: theme.spacing(2),
