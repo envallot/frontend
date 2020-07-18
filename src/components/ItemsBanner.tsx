@@ -14,7 +14,7 @@ export default function ItemsBanner({ selectedEnvelope, setOpenItemForm, setItem
 
   const handleDragOver = (event: any) => {
     event.preventDefault()
-    setItemsBannerSelected(true)
+    selectedEnvelope.selected && setItemsBannerSelected(true)
   }
 
   const handleDragLeave = (event: any) => {
