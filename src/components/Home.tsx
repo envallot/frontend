@@ -13,7 +13,7 @@ import {
   More as MoreIcon,
   Add as AddIcon,
 } from '@material-ui/icons';
-import { Loader, Item, Envelope, DeleteIcon } from './index'
+import { Loader, Item, Envelope, DeleteIcon, ItemsBanner } from './index'
 import axios from 'axios'
 import { useStyles } from '../styles'
 import { ItemFormModal, EnvelopeFormModal, EnvelopeDetailModal } from '../Modals'
@@ -65,13 +65,17 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
   const [deleteSelected, setDeleteSelected] = useState(false)
 
   useEffect(() => {
-    console.log('***********************envelopes', envelopes, "items:", items)
-  }, [envelopes, items])
+    console.log('***********************envelopes', selectedEnvelope, "items:", selectedItem)
+  }, [selectedItem, selectedEnvelope])
+
+  useEffect(() => {
+    console.log('deleteSelected', deleteSelected)
+  }, [deleteSelected])
 
   const [openItemForm, setOpenItemForm] = useState(false);
   const [openEnvelopeForm, setOpenEnvelopeForm] = useState(false);
   const [envelopeDetail, setEnvelopeDetail] = useState({ open: false, envelope: {} });
-
+  const [itemsBannerSelected, setItemsBannerSelected] = useState(false)
 
 
   useEffect(() => {
@@ -150,25 +154,31 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
           </Toolbar>
         </AppBar>
         <Grid justify="center" container>
-          
-            <DeleteIcon
-              deleteSelected={deleteSelected}
-              setDeleteSelected={setDeleteSelected}
-            />
+
+          <DeleteIcon
+            deleteSelected={deleteSelected}
+            setDeleteSelected={setDeleteSelected}
+          />
           {/* </Grid> */}
         </Grid>
 
         <Grid container direction="row" spacing={8}>
           <Grid item xs={6}>
             <Grid container direction="column" spacing={3}>
-              <Grid item container key="item_buttons" xs={12} >
+              {/* <Grid item container key="item_buttons" xs={12} > */}
+              <ItemsBanner
+                setItemsBannerSelected={setItemsBannerSelected}
+                itemsBannerSelected={itemsBannerSelected}
+              >
+
                 <AddIcon
                   fontSize={"large"}
                   onClick={() => { setOpenItemForm(true) }}
 
                 />
                 <Typography display="block" variant="h4" component="h2">Items</Typography>
-              </Grid>
+              </ItemsBanner>
+              {/* </Grid> */}
 
               {/* {Object.entries(items).filter((item: any) => item.envelope_id == null).map(([id, item]: any) => { */}
 
@@ -213,6 +223,13 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
                     envelope={envelope}
                     setSelectedEnvelope={setSelectedEnvelope}
                     setEnvelopeDetail={setEnvelopeDetail}
+                    deleteSelected={deleteSelected}
+                    setEnvelopes={setEnvelopes}
+                    envelopes={envelopes}
+                    selectedItem={selectedItem}
+                    setDeleteSelected={setDeleteSelected}
+                    setItemsBannerSelected={setItemsBannerSelected}
+                    itemsBannerSelected={itemsBannerSelected}
                   />
                 )
               })}

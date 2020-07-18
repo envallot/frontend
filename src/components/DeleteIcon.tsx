@@ -6,30 +6,26 @@ import {
 import { Grid } from '@material-ui/core';
 
 interface DeleteIconPropType {
-  // items: any[]
-  // envelopes: any[]
-  // setItems: (i: any) => void
-  // setEnvelopes: (e: any) => void
   setDeleteSelected: (e: boolean) => void
   deleteSelected: boolean
-
 }
 
 export default function DeleteIcon({ setDeleteSelected, deleteSelected }: DeleteIconPropType) {
 
-
-  const handleDragEnter = (event:any) => {
+  const handleDragEnter = (event: any) => {
     event.preventDefault()
     setDeleteSelected(true)
   }
 
-  const handleDragLeave = (event:any) => {
+  const handleDragLeave = (event: any) => {
     console.log('leaving delete icon')
-    setDeleteSelected(false)
+    event.preventDefault()
+
+    setTimeout(() => setDeleteSelected(false), 0)
   }
 
   return (
-    <Grid 
+    <Grid
       style={{
         width: "200px",
         height: "120px",
@@ -44,10 +40,10 @@ export default function DeleteIcon({ setDeleteSelected, deleteSelected }: Delete
 
       <DeleteForever
         fontSize="large"
-        style={{ 
-          color: deleteSelected ? "pink" : "black", 
+        style={{
+          color: deleteSelected ? "pink" : "black",
           pointerEvents: "none"
-         }}
+        }}
 
       />
     </Grid>

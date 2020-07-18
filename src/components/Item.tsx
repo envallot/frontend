@@ -52,6 +52,9 @@ export default function Item({
    * @param event 
    */
   const handleDragEnd = async (event: any) => {
+    setSelectedItem({
+      selected: false, item: {}
+    })
     if (deleteSelected) {
       try {
         setDeleteSelected(false)
@@ -70,7 +73,7 @@ export default function Item({
         console.log(error)
       }
     } else if (selectedEnvelope.selected && selectedEnvelope.selected) {
-      console.log('making assign req')
+      console.log('item handle drag end')
 
       try {
         // Hold reference to our envelope_id here
@@ -92,7 +95,7 @@ export default function Item({
         const { data } = await axios(process.env.REACT_APP_URL + "/items", {
           method: "PUT",
           withCredentials: true,
-          data: { ...selectedItem.item, envelope_id: assignedEnv }
+          data: { ...selectedItem.item, envelope_id: assignedEnv.current }
         })
 
       } catch (error) {
