@@ -16,7 +16,7 @@ interface EnvelopePropsType {
   setDeleteSelected: (d: any) => void
   setItemsBannerSelected: (b: boolean) => void
   itemsBannerSelected: boolean
-  unassignItems: (e:any) => void
+  unassignItems: (e: any) => void
 }
 
 export default function Envelope({
@@ -49,10 +49,12 @@ export default function Envelope({
     console.log('envelope handle drag leave')
 
     event.preventDefault()
-    setSelectedEnvelope({
-      selected: false,
-      envelope: {}
-    })
+    
+    selectedItem.selected &&
+      setSelectedEnvelope({
+        selected: false,
+        envelope: {}
+      })
   }
 
   const handleDragStart = (event: any) => {
@@ -93,7 +95,7 @@ export default function Envelope({
       } catch (error) {
         console.log(error)
       }
-    } else if (itemsBannerSelected){
+    } else if (itemsBannerSelected) {
       console.log('itemsBannerSelected on envelope drag end')
       setItemsBannerSelected(false)
       unassignItems(envelope.id)

@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React, { useEffect } from 'react'
 import { Grid, Typography } from '@material-ui/core'
 import { Add as AddIcon } from '@material-ui/icons'
 import { useStyles } from '../styles'
@@ -17,6 +17,8 @@ export default function ItemsBanner({ selectedEnvelope, setOpenItemForm, setItem
     selectedEnvelope.selected && setItemsBannerSelected(true)
   }
 
+  useEffect(()=>console.log('itemsBannerSelected, selectedEnvelope.selected',itemsBannerSelected, selectedEnvelope.selected ), [itemsBannerSelected, selectedEnvelope])
+  
   const handleDragLeave = (event: any) => {
     console.log('items banner drag leave')
     setItemsBannerSelected(false)

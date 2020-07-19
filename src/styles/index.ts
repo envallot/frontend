@@ -127,4 +127,11 @@ export const useStyles = makeStyles((theme: Theme) => ({
     lineHeight: "1.334",
     background: "inherit"
   },
+  borderlessInputPaper: {
+    fontSize: "1.1rem",
+    border: "none",
+    borderColor: "transparent",
+    fontFamily: theme.typography.fontFamily,
+    outline: "none"
+  },
 }));

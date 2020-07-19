@@ -1,7 +1,8 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import { useStyles } from '../styles'
+import { useDebounce } from '../hooks'
 import axios from 'axios'
 
 interface ItemPropsType {
@@ -16,6 +17,8 @@ interface ItemPropsType {
   setDeleteSelected: (b: boolean) => void
 }
 
+
+
 export default function Item({
   item,
   setItems,
@@ -27,6 +30,53 @@ export default function Item({
   deleteSelected,
   setDeleteSelected
 }: ItemPropsType) {
+
+  const [formState, setFormState] = useState({
+    id: item.id,
+    name: item.name,
+    amount: item.amount
+  })
+
+  const [ready, setReady] = useState(false)
+
+  const handleChange = (event: any) => {
+    setFormState({
+      ...formState,
+      [event.target.name]: event.target.value
+    })
+    setReady(true)
+  }
+
+  const debouncedFormState = useDebounce(formState, 500)
+
+  const submit = async () => {
+
+    try {
+      const newItems = [...items]
+      const index = newItems.indexOf(item)
+      newItems[index] = { ...newItems[index], ...debouncedFormState }
+
+      setItems(newItems)
+
+      return await axios(process.env.REACT_APP_URL + '/items', {
+        method: "PUT",
+        withCredentials: true,
+        data: {
+          ...formState
+        }
+      })
+
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setReady(false)
+    }
+  }
+
+  useEffect(() => {
+    // This hook runs every time debounce changes, as long as the user has triggerd handleChange
+    ready && debouncedFormState && submit()
+  }, [debouncedFormState])
 
   /**
    * handleDragStart selects current item - this is for other componensts,
@@ -119,9 +169,40 @@ export default function Item({
       onDragEnd={handleDragEnd}
     >
       <Paper
-        style={{ pointerEvents: "none" }}
         className={classes.paper}>
-        {item.name}:{item.amount}
+        <form
+          style={{
+            display: "flex",
+            justifyContent: "space-between"
+          }}>
+          <label
+            htmlFor={'name'}
+          >
+            Name:
+          </label>
+          <input
+            className={classes.borderlessInputPaper}
+            value={formState.name}
+            name="name"
+            id="name"
+            onChange={handleChange}
+          />
+          <label
+            htmlFor={'amount'}
+          >
+            Amount:
+          </label>
+          <input
+            style={{
+              maxWidth: "50px"
+            }}
+            className={classes.borderlessInputPaper}
+            value={formState.amount}
+            id="amount"
+            name="amount"
+            onChange={handleChange}
+          />
+        </form>
       </Paper>
     </Grid>
   )
