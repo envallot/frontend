@@ -9,3 +9,5 @@ export { default as Envelope } from './Envelope'
 export { default as DeleteIcon } from './DeleteIcon'
 
 export { default as ItemsBanner } from './ItemsBanner'
+
+export { default as Bar} from './Bar'

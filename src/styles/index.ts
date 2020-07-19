@@ -109,5 +109,22 @@ export const useStyles = makeStyles((theme: Theme) => ({
   center: {
     marginLeft: "auto",
     marginRight: "auto"
-  }
+  },
+  borderlessInputModal: {
+    border: "none",
+    borderColor: "transparent",
+    fontSize: "1.5rem",
+    fontFamily: theme.typography.fontFamily,
+    outline: "none"
+  },
+  borderlessInputBar: {
+    border: "none",
+    borderColor: "transparent",
+    fontSize: "1.5rem",
+    fontFamily: theme.typography.fontFamily,
+    outline: "none",
+    fontWight: "400",
+    lineHeight: "1.334",
+    background: "inherit"
+  },
 }));

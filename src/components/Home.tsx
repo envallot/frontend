@@ -2,10 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   Container,
   Typography,
-  AppBar,
-  Toolbar,
-  IconButton,
-
 } from '@material-ui/core';
 import {
   Menu as MenuIcon,
@@ -13,7 +9,7 @@ import {
   More as MoreIcon,
   Add as AddIcon,
 } from '@material-ui/icons';
-import { Loader, Item, Envelope, DeleteIcon, ItemsBanner } from './index'
+import { Loader, Item, Envelope, DeleteIcon, ItemsBanner, Bar } from './index'
 import axios from 'axios'
 import { useStyles } from '../styles'
 import { ItemFormModal, EnvelopeFormModal, EnvelopeDetailModal } from '../Modals'
@@ -34,6 +30,8 @@ class NetworkError {
 interface User {
   authorized: boolean,
   id: string,
+  username: string,
+  email: string
 }
 
 interface HomePropType {
@@ -120,8 +118,10 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
       try {
         const { data } = await axios(process.env.REACT_APP_URL + '/users', { method: 'POST', withCredentials: true })
         setUser({
-          id: data.id,
-          authorized: data.success
+          // id: data.id,
+          // authorized: data.success
+          authorized: data.success,
+          ...data
         })
         console.log('user authed', user, data)
 
@@ -142,7 +142,8 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
   return (
     loading ? <Loader /> :
       <Container>
-        <AppBar elevation={0} position="static">
+        <Bar user={user} setUser={setUser} />
+        {/* <AppBar elevation={0} position="static">
           <Toolbar className={classes.toolbar}>
             <IconButton
               edge="start"
@@ -162,7 +163,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
               <MoreIcon />
             </IconButton>
           </Toolbar>
-        </AppBar>
+        </AppBar> */}
         <Grid justify="center" container>
 
           <DeleteIcon

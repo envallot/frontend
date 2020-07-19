@@ -48,14 +48,14 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
-  borderlessInput: {
+  borderlessInputModal: {
     border: "none",
     borderColor: "transparent",
     fontSize: "1.5rem",
     fontFamily: theme.typography.fontFamily,
     outline: "none"
   },
-  label: {
+  labelModal: {
     fontSize: "1.5rem",
     fontFamily: theme.typography.fontFamily,
     marginRight: "10px"
@@ -83,54 +83,62 @@ export default function EnvelopeDetailModal({
 
   const [formState, setFormState] = useState({
     name: "",
-    limit_amount: ""
+    limit_amount: "",
+    id: 0
   })
 
   const [ready, setReady] = useState(false)
 
-  // Since this form is rendered on startup, not on open, we have to hydrate form state on open
+  const submit = async () => {
+    
+    try {
+      const newEnvelopes = [...envelopes]
+      const index = newEnvelopes.indexOf(envelope)
+      newEnvelopes[index] = { ...newEnvelopes[index], ...debouncedFormState }
+
+      setEnvelopes(newEnvelopes)
+
+      return await axios(process.env.REACT_APP_URL + '/envelopes', {
+        method: "PUT",
+        withCredentials: true,
+        data: {
+          ...formState
+        }
+      })
+
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setReady(false)
+    }
+  }
+
   useEffect(() => {
-    open && setFormState({
-      name: envelope.name,
-      limit_amount: envelope.limit_amount
-    })
+    
+    if (open) { 
+      // Since this form is rendered on startup, not on open, we have to hydrate form state on open
+      setFormState({ ...envelope })
+    } else if (ready) { 
+      // Takes care of user closing modal before debounce triggers
+      const newEnvelopes = envelopes.map((env: any) => {
+        return env.id !== formState.id ? env : formState
+      })
+
+      setEnvelopes(newEnvelopes)
+    }
+
   }, [open])
 
   // This hook listens to form state changing, but will delay its output using useTimeout internally
   const debouncedFormState = useDebounce(formState, 1000)
 
-  // This hook runs every time debounce changes, as long as the user has triggerd handleChange
   useEffect(() => {
-    const submit = async () => {
-      try {
-
-        const newEnvelopes = [...envelopes]
-        const index = newEnvelopes.indexOf(envelope)
-        newEnvelopes[index] = { ...newEnvelopes[index], ...debouncedFormState }
-
-        setEnvelopes(newEnvelopes)
-
-        return await axios(process.env.REACT_APP_URL + '/envelopes', {
-          method: "PUT",
-          withCredentials: true,
-          data: {
-            ...formState,
-            id: envelope.id
-          }
-        })
-
-      } catch (error) {
-        console.log(error)
-      } finally {
-        setReady(false)
-      }
-    }
-
+    // This hook runs every time debounce changes, as long as the user has triggerd handleChange
     ready && debouncedFormState && submit()
   }, [debouncedFormState])
 
-  // Standard form state management, but also triggers the ready state, which allows update query to run
   const handleChange = (event: any) => {
+    // Standard form state management, but also triggers the ready state, which allows update query to run
     setFormState({
       ...formState,
       [event.target.name]: event.target.value
@@ -145,8 +153,8 @@ export default function EnvelopeDetailModal({
 
   const classes = useStyles();
 
-  // Here we change the envelope_id of an item to null, and 
   const handleClickItem = async (event: any, item: any) => {
+    // Here we change the envelope_id of an item to null, and 
     try {
       const newItems = [...items]
       const index = newItems.indexOf(item)
@@ -177,11 +185,11 @@ export default function EnvelopeDetailModal({
         <form
           onSubmit={handleSubmit}
         >
-          <label className={classes.label} htmlFor="name">
+          <label className={classes.labelModal} htmlFor="name">
             Name:
           </label>
           <input
-            className={classes.borderlessInput}
+            className={classes.borderlessInputModal}
             onChange={handleChange}
             type="text"
             name="name"
@@ -189,11 +197,11 @@ export default function EnvelopeDetailModal({
             value={formState.name}
           />
 
-          <label className={classes.label} htmlFor="limit_amount">
+          <label className={classes.labelModal} htmlFor="limit_amount">
             Limit:
-          </label>
+            </label>
           <input
-            className={classes.borderlessInput}
+            className={classes.borderlessInputModal}
             onChange={handleChange}
             type="text"
             name="limit_amount"

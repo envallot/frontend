@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import { Home } from './components'
 import { ErrorModal } from './Modals'
-import { useStyles} from './styles'
+import { useStyles } from './styles'
 
 export default function App() {
 
@@ -15,6 +15,8 @@ export default function App() {
   const [user, setUser] = useState({
     authorized: false,
     id: '',
+    username: '',
+    email: ''
   })
 
   const [error, setError] = useState({
@@ -34,13 +36,13 @@ export default function App() {
     })
   }
 
- 
+
   return (
     <Router>
-      <div className = {classes.root}>
+      <div className={classes.root}>
         <Switch>
           <Route path="/">
-            <Home 
+            <Home
               user={user}
               setUser={setUser}
               setError={setError}
