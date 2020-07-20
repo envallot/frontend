@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -36,6 +36,14 @@ export default function App() {
     })
   }
 
+  const setAndShowError = ({ code, name, message }: any) => {
+    setError({
+      code,
+      name,
+      message,
+    })
+    setShowErrorModal(true)
+  }
 
   return (
     <Router>
@@ -48,6 +56,7 @@ export default function App() {
               setError={setError}
               error={error}
               setShowErrorModal={setShowErrorModal}
+              setAndShowError={setAndShowError}
             />
           </Route>
         </Switch>

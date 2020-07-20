@@ -4,17 +4,14 @@ import {
   Typography,
 } from '@material-ui/core';
 import {
-  Menu as MenuIcon,
-  Search as SearchIcon,
-  More as MoreIcon,
   Add as AddIcon,
 } from '@material-ui/icons';
-import { Loader, Item, Envelope, DeleteIcon, ItemsBanner, Bar } from './index'
 import axios from 'axios'
+import { Loader, Item, Envelope, DeleteIcon, ItemsBanner, Bar } from './index'
 import { useStyles } from '../styles'
 import { ItemFormModal, EnvelopeFormModal, EnvelopeDetailModal } from '../Modals'
-import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
+import { fetch } from '../utils'
 
 class NetworkError {
   message: string
@@ -40,6 +37,7 @@ interface HomePropType {
   error: NetworkError,
   setError: (arg0: NetworkError) => void
   setShowErrorModal: (arg0: boolean) => void
+  setAndShowError: (e: any) => void
 }
 
 /**
@@ -50,35 +48,30 @@ interface HomePropType {
  * 
  * @param param0 Porps passed from home
  */
-export default function Home({ setUser, setError, setShowErrorModal, user }: HomePropType) {
+export default function Home({ setUser, setError, setShowErrorModal, user, setAndShowError }: HomePropType) {
 
-  const classes = useStyles()
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
+
+  // ********************************** App State ********************************** \\
   const [items, setItems] = useState([] as any)
   const [envelopes, setEnvelopes] = useState([])
 
+
+  // ********************************** DND selectors ********************************** \\
   const [selectedItem, setSelectedItem] = useState({ selected: false, item: {} })
   const [selectedEnvelope, setSelectedEnvelope] = useState({ selected: false, envelope: {} })
   const [deleteSelected, setDeleteSelected] = useState(false)
+  const [itemsBannerSelected, setItemsBannerSelected] = useState(false)
 
-  useEffect(() => {
-    console.log('***********************envelopes', selectedEnvelope, "items:", selectedItem)
-  }, [selectedItem, selectedEnvelope])
 
-  useEffect(() => {
-    console.log('deleteSelected', deleteSelected)
-  }, [deleteSelected])
-
+  // ********************************** Show/Hide Modals ********************************** \\
   const [openItemForm, setOpenItemForm] = useState(false);
   const [openEnvelopeForm, setOpenEnvelopeForm] = useState(false);
   const [envelopeDetail, setEnvelopeDetail] = useState({ open: false, envelope: {} });
-  const [itemsBannerSelected, setItemsBannerSelected] = useState(false)
 
-  useEffect(() => console.log('itemsBannerSelected', itemsBannerSelected), [itemsBannerSelected])
 
-  useEffect(() => console.log('deleteSelected', deleteSelected), [deleteSelected])
-
+  // ********************************** helpers ********************************** \\
   const unassignItems = (envelopeID: number) => {
     const newItems = items.map((item: any) => {
       return item.envelope_id === envelopeID ? { ...item, envelope_id: null } : item
@@ -86,28 +79,34 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
     setItems(newItems)
   }
 
-  useEffect(() => {
-    const getEnvelopes = async () => {
-      try {
-        const { data } = await axios(process.env.REACT_APP_URL + '/envelopes', { method: "GET", withCredentials: true })
-        setEnvelopes(data)
-      } catch (error) {
-        console.log(error)
-      }
-    }
 
-    const getItems = async () => {
-      try {
-        const { data } = await axios(process.env.REACT_APP_URL + '/items', { method: "GET", withCredentials: true })
-        setItems(data)
-      } catch (error) {
-        console.log(error)
-      }
+  // ********************************** API calls ********************************** \\
+  const getEnvelopes = async () => {
+    try {
+      const { data } = await fetch(process.env.REACT_APP_URL + '/envelopes', "GET")
+      setEnvelopes(data)
+    } catch (error) {
+      setAndShowError(error)
     }
-    // If user is authorized, we make a call to get items and envelopes data
+  }
+
+  const getItems = async () => {
+    try {
+      const { data } = await fetch('/items', "GET")
+      setItems(data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const hydrateState = () => {
+    getItems()
+    getEnvelopes()
+  }
+
+  useEffect(() => {
     if (user.authorized) {
-      getItems()
-      getEnvelopes()
+      hydrateState()
     }
   }, [user])
 
@@ -116,22 +115,15 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
     (async () => {
       setLoading(true)
       try {
-        const { data } = await axios(process.env.REACT_APP_URL + '/users', { method: 'POST', withCredentials: true })
+        const { data } = await fetch('/users', 'POST')
         setUser({
-          // id: data.id,
-          // authorized: data.success
           authorized: data.success,
           ...data
         })
-        console.log('user authed', user, data)
 
       } catch (error) {
-        setError({
-          code: error.code,
-          name: error.name,
-          message: error.message,
-        })
-        setShowErrorModal(true)
+        console.log(error)
+        setAndShowError(error)
       } finally {
         setLoading(false)
       }
@@ -143,40 +135,17 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
     loading ? <Loader /> :
       <Container>
         <Bar user={user} setUser={setUser} />
-        {/* <AppBar elevation={0} position="static">
-          <Toolbar className={classes.toolbar}>
-            <IconButton
-              edge="start"
-              className={classes.menuButton}
-              color="inherit"
-              aria-label="open drawer"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography className={classes.title} variant="h5" noWrap>
-              Env-Allot: easy budgeting
-          </Typography>
-            <IconButton aria-label="search" color="inherit">
-              <SearchIcon />
-            </IconButton>
-            <IconButton aria-label="display more actions" edge="end" color="inherit">
-              <MoreIcon />
-            </IconButton>
-          </Toolbar>
-        </AppBar> */}
-        <Grid justify="center" container>
 
+        <Grid justify="center" container>
           <DeleteIcon
             deleteSelected={deleteSelected}
             setDeleteSelected={setDeleteSelected}
           />
-          {/* </Grid> */}
         </Grid>
 
         <Grid container direction="row" spacing={8}>
           <Grid item xs={6}>
             <Grid container direction="column" spacing={3}>
-              {/* <Grid item container key="item_buttons" xs={12} > */}
               <ItemsBanner
                 setOpenItemForm={setOpenItemForm}
                 selectedEnvelope={selectedEnvelope}
@@ -206,7 +175,6 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
             <Grid
               container direction="column" spacing={3
               }>
-              {/* <Grid container direction="column" spacing={3}> */}
               <Grid
                 item
                 container
@@ -214,16 +182,13 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
                 xs={12}
               >
                 <AddIcon
-                  // className={selectedEnvelope.selected ? classes.noEvents : ''}
                   fontSize={"large"}
                   onClick={() => { setOpenEnvelopeForm(true) }}
                 />
                 <Typography
-                  // className={selectedEnvelope.selected ? classes.noEvents : ''}
                   display="block"
                   variant="h4"
                   component="h2"
-
                 >
                   Envelopes
                 </Typography>
@@ -251,7 +216,6 @@ export default function Home({ setUser, setError, setShowErrorModal, user }: Hom
               })}
             </Grid>
           </Grid>
-          {/* </Grid> */}
         </Grid>
 
         <ItemFormModal
