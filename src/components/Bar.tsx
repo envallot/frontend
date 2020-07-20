@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios'
+import { fetch } from '../utils'
+import { useDebounce } from '../hooks'
+
 import {
   Typography,
   AppBar,
@@ -12,11 +14,13 @@ import {
   More as MoreIcon,
 } from '@material-ui/icons';
 import { useStyles } from '../styles'
-import { useDebounce } from '../hooks'
+import { AxiosError } from 'axios';
 
 interface AppBarPropTypes {
   user: any,
   setUser: (u: any) => void
+  getOrCreateUser: () => void
+  setAndShowError: (e:AxiosError) => void
 }
 
 /**
@@ -26,18 +30,19 @@ interface AppBarPropTypes {
  * on mount, we need to have a ready state that is turned on on change, turnd off after query
  * @param param0 
  */
-export default function Bar({ user, setUser }: AppBarPropTypes) {
+export default function Bar({ user, setUser, getOrCreateUser, setAndShowError }: AppBarPropTypes) {
+
+    // ********************************** Form State ********************************** \\
 
   const [formState, setFormState] = useState({
     ...user
   })
-  
-  const [ready, setReady] = useState(false)
 
-  useEffect(() => console.log('user', user), [user])
+  const [ready, setReady] = useState(false)
 
   const handleChange = (event: any) => {
     setReady(true)
+
     setFormState({
       ...formState,
       [event.target.name]: event.target.value
@@ -46,29 +51,29 @@ export default function Bar({ user, setUser }: AppBarPropTypes) {
 
   const debouncedFormState = useDebounce(formState, 1000)
 
+    // ********************************** API calls ********************************** \\
+
   const submit = async () => {
     try {
 
       setUser(debouncedFormState.username)
 
-
-      return await axios(process.env.REACT_APP_URL + '/users', {
-        method: "PUT",
-        withCredentials: true,
-        data: {
-          ...user,
-          username: formState.username
-        }
+      await fetch('/users', "PUT", {
+        ...user,
+        username: formState.username
       })
+
     } catch (error) {
-      console.log(error)
+      setAndShowError(error)
+      getOrCreateUser()
     } finally {
       setReady(false)
     }
   }
 
-  useEffect(() => {
+    // ********************************** Schedule Tasks ********************************** \\
 
+  useEffect(() => {
     if (ready) {
       submit()
     }

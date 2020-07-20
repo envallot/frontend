@@ -17,6 +17,7 @@ class NetworkError {
   message: string
   code: string
   name: string
+
   constructor(code: string, name: string, message: string) {
     this.code = code
     this.name = name
@@ -94,6 +95,22 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     }
   }
 
+  const getOrCreateUser = async () => {
+    try {
+
+      const { data } = await fetch('/users', 'POST')
+      setUser({
+        authorized: data.success,
+        ...data
+      })
+
+    } catch (error) {
+      setAndShowError(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
 
   // ********************************** Helpers ********************************** \\
 
@@ -102,7 +119,6 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     getItems()
     getEnvelopes()
   }
-
 
 
   // ********************************** Item Helpers ********************************** \\
@@ -114,11 +130,11 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     setItems(newItems)
   }
 
-  const unassignItem = (item:any) => {
-     const newItems = [...items]
-      const index = newItems.indexOf(item)
-      newItems[index] = { ...item, envelope_id: null }
-      setItems(newItems)
+  const unassignItem = (item: any) => {
+    const newItems = [...items]
+    const index = newItems.indexOf(item)
+    newItems[index] = { ...item, envelope_id: null }
+    setItems(newItems)
   }
 
   const deleteItem = (item: any) => {
@@ -163,27 +179,19 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
   }, [user])
 
   useEffect(() => {
-    (async () => {
-      try {
-        const { data } = await fetch('/users', 'POST')
-        setUser({
-          authorized: data.success,
-          ...data
-        })
-
-      } catch (error) {
-        handleErrorAndRevertState(error)
-      } finally {
-        setLoading(false)
-      }
-    })()
-
+    getOrCreateUser()
   }, [setUser, setError, setShowErrorModal])
+
+
 
   return (
     loading ? <Loader /> :
       <Container>
-        <Bar user={user} setUser={setUser} />
+        <Bar
+          setAndShowError={setAndShowError}
+          getOrCreateUser={getOrCreateUser}
+          user={user} setUser={setUser}
+        />
 
         <Grid justify="center" container>
           <DeleteIcon

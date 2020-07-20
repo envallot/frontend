@@ -1,5 +1,4 @@
 import React from 'react'
-import axios from 'axios'
 import {
   DeleteForever
 } from '@material-ui/icons';
@@ -19,7 +18,6 @@ export default function DeleteIcon({ setDeleteSelected, deleteSelected }: Delete
 
   const handleDragLeave = (event: any) => {
     console.log('leaving delete icon')
-    // event.preventDefault()
     setDeleteSelected(false)
 
   }
