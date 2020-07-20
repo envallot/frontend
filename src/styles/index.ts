@@ -93,7 +93,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
     overflow: 'auto',
     flexDirection: 'column',
     fontSize: "1.1rem"
-
   },
   hovering: {
     padding: theme.spacing(2),
@@ -115,7 +114,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     borderColor: "transparent",
     fontSize: "1.5rem",
     fontFamily: theme.typography.fontFamily,
-    outline: "none"
+    outline: "none",
+    minWidth: "100px"
   },
   borderlessInputBar: {
     border: "none",
@@ -132,6 +132,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     border: "none",
     borderColor: "transparent",
     fontFamily: theme.typography.fontFamily,
-    outline: "none"
+    outline: "none",
+    minWidth:"100px"
   },
 }));

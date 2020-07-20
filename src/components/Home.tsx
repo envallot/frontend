@@ -75,6 +75,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
   const [envelopeDetail, setEnvelopeDetail] = useState({ open: false, envelope: {} });
 
 
+  useEffect(()=>{console.log('newItems', items)}, [items])
   // ********************************** API calls ********************************** \\
 
   const getEnvelopes = async () => {
@@ -90,6 +91,8 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     try {
       const { data } = await fetch('/items', "GET")
       setItems(data)
+      console.log('getItems invoke')
+
     } catch (error) {
       setAndShowError(error)
     }

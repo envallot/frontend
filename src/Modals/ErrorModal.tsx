@@ -16,7 +16,7 @@ interface ErrorModalPropsType {
   handleClose: () => void
 }
 
-export default function ErrorModal({ handleClose, message, code, name, open }: ErrorModalPropsType) {
+export default function ErrorModal({ handleClose, message, code, open }: ErrorModalPropsType) {
   return (
     <Dialog
       open={open}
@@ -27,7 +27,7 @@ export default function ErrorModal({ handleClose, message, code, name, open }: E
       <DialogTitle id="alert-dialog-title">{code}</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          {name}: {message}
+          {message}
         </DialogContentText>
       </DialogContent>
       <DialogActions>

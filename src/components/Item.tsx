@@ -20,6 +20,33 @@ interface ItemPropsType {
   assignItem: (i: any, e: number) => void
 }
 
+const validateMoney = (value: string) => {
+
+  const regex = /^[0-9]\d*(((,\d{3}){1})?(\.\d{0,2})?)$/
+  if (regex.test(value)) {
+    //Input is valid, check the number of decimal places
+    var twoDecimalPlaces = /\.\d{2}$/g;
+    var oneDecimalPlace = /\.\d{1}$/g;
+    var noDecimalPlacesWithDecimal = /\.\d{0}$/g;
+
+    if (value.match(twoDecimalPlaces)) {
+      //all good, return as is
+      return value;
+    }
+    if (value.match(noDecimalPlacesWithDecimal)) {
+      //add two decimal places
+      return value + '00';
+    }
+    if (value.match(oneDecimalPlace)) {
+      //ad one decimal place
+      return value + '0';
+    }
+    //else there is no decimal places and no decimal
+    return value + ".00";
+  }
+
+  return false
+}
 
 export default function Item({
   item,
@@ -35,6 +62,7 @@ export default function Item({
   assignItem
 }: ItemPropsType) {
 
+  const assignedEnv = useRef(0)
 
   // ********************************** Form State  ********************************** \\
 
@@ -46,7 +74,21 @@ export default function Item({
 
   const [ready, setReady] = useState(false)
 
+  const [valid, setValid] = useState(true)
+
   const handleChange = (event: any) => {
+
+    if (event.target.name === "amount") {
+      const dollars = validateMoney(event.target.value)
+      if (!dollars) {
+        setValid(false)
+      } else {
+        if (!valid) {
+          setValid(true)
+        }
+      }
+    }
+
     setFormState({
       ...formState,
       [event.target.name]: event.target.value
@@ -56,7 +98,24 @@ export default function Item({
 
   const debouncedFormState = useDebounce(formState, 500)
 
-  const assignedEnv = useRef(0)
+  // If item changes, for instance when reverting state on error, we reflect it in form state
+  useEffect(() => {
+    setFormState({
+      id: item.id,
+      name: item.name,
+      amount: item.amount
+    })
+  }, [item])
+
+  // When use clicks out of input, formstate reverts to previous valid state
+  const handleBlur = (event: any) => {
+    setFormState({
+      id: item.id,
+      name: item.name,
+      amount: item.amount
+    })
+    setValid(true)
+  }
 
 
   // ********************************** DND Handlers ********************************** \\
@@ -143,7 +202,10 @@ export default function Item({
       )
 
     } catch (error) {
-      handleErrorAndRevertState(error)
+      console.log(
+        'itemError', error.response.data
+      )
+      handleErrorAndRevertState(error.response.data)
     } finally {
       setReady(false)
     }
@@ -154,8 +216,12 @@ export default function Item({
 
   useEffect(() => {
     // This hook runs every time debounce changes, as long as the user has triggerd handleChange
-    ready && debouncedFormState && submit()
+    // ready && debouncedFormState && submit()
+    if (ready && debouncedFormState && valid) {
+      submit()
+    }
   }, [debouncedFormState])
+
 
 
   const classes = useStyles()
@@ -181,6 +247,7 @@ export default function Item({
             Name:
           </label>
           <input
+            onBlur={handleBlur}
             className={classes.borderlessInputPaper}
             value={formState.name}
             name="name"
@@ -194,8 +261,10 @@ export default function Item({
           </label>
           <input
             style={{
-              maxWidth: "50px"
+              maxWidth: "50px",
+              color: valid ? "black" : "red"
             }}
+            onBlur={handleBlur}
             className={classes.borderlessInputPaper}
             value={formState.amount}
             id="amount"
