@@ -3,33 +3,40 @@ import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import { useStyles } from '../styles'
 import { useDebounce } from '../hooks'
-import axios from 'axios'
+import { AxiosError } from 'axios'
+import { fetch } from '../utils'
 
 interface ItemPropsType {
   item: any
   setSelectedItem: (i: any) => void
-  setItems: (i: any) => void
   setSelectedEnvelope: (e: any) => void
   selectedEnvelope: any
   selectedItem: any
-  items: any
   deleteSelected: boolean
   setDeleteSelected: (b: boolean) => void
+  handleErrorAndRevertState: (e: AxiosError) => void
+  deleteItem: (i: any) => void
+  updateItem: (i: any, a: any) => void
+  assignItem: (i: any, e: number) => void
 }
-
 
 
 export default function Item({
   item,
-  setItems,
-  items,
   selectedItem,
   setSelectedItem,
   selectedEnvelope,
   setSelectedEnvelope,
   deleteSelected,
-  setDeleteSelected
+  setDeleteSelected,
+  handleErrorAndRevertState,
+  deleteItem,
+  updateItem,
+  assignItem
 }: ItemPropsType) {
+
+
+  // ********************************** Form State  ********************************** \\
 
   const [formState, setFormState] = useState({
     id: item.id,
@@ -49,34 +56,10 @@ export default function Item({
 
   const debouncedFormState = useDebounce(formState, 500)
 
-  const submit = async () => {
+  const assignedEnv = useRef(0)
 
-    try {
-      const newItems = [...items]
-      const index = newItems.indexOf(item)
-      newItems[index] = { ...newItems[index], ...debouncedFormState }
 
-      setItems(newItems)
-
-      return await axios(process.env.REACT_APP_URL + '/items', {
-        method: "PUT",
-        withCredentials: true,
-        data: {
-          ...formState
-        }
-      })
-
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setReady(false)
-    }
-  }
-
-  useEffect(() => {
-    // This hook runs every time debounce changes, as long as the user has triggerd handleChange
-    ready && debouncedFormState && submit()
-  }, [debouncedFormState])
+  // ********************************** DND Handlers ********************************** \\
 
   /**
    * handleDragStart selects current item - this is for other componensts,
@@ -94,7 +77,6 @@ export default function Item({
     }, 0)
   }
 
-  const assignedEnv = useRef()
 
   /**
    * handleDragEnd makes the call to update item's envelope_id to currently selected envelope
@@ -102,29 +84,23 @@ export default function Item({
    * @param event 
    */
   const handleDragEnd = async (event: any) => {
+
     setSelectedItem({
       selected: false, item: {}
     })
+
     if (deleteSelected) {
       try {
-        setDeleteSelected(false)
-        console.log('making delete req')
-        const newItems = [...items]
-        const index = newItems.indexOf(item)
-        newItems.splice(index, 1)
-        setItems(newItems)
 
-        await axios(process.env.REACT_APP_URL + `/items/${item.id}`, {
-          method: "DELETE",
-          withCredentials: true
-        })
+        setDeleteSelected(false)
+        deleteItem(item)
+        await fetch(`/items/${item.id}`, "DELETE")
 
       } catch (error) {
-        console.log(error)
+        handleErrorAndRevertState(error)
       }
-    } else if (selectedEnvelope.selected && selectedEnvelope.selected) {
-      console.log('item handle drag end')
 
+    } else if (selectedEnvelope.selected && selectedItem.selected) {
       try {
         // Hold reference to our envelope_id here
         assignedEnv.current = selectedEnvelope.envelope.id
@@ -135,28 +111,52 @@ export default function Item({
           envelope: {}
         })
 
-        const newItems = [...items]
-        const index = newItems.indexOf(item)
-        // If we did not use useRef, we would have to unselect envelope after promise resolves, making
-        // UI feel slow and sluggish
-        newItems[index] = { ...item, envelope_id: assignedEnv.current }
-        setItems(newItems)
+        // Change state before API call
+        assignItem(item, assignedEnv.current)
 
-        const { data } = await axios(process.env.REACT_APP_URL + "/items", {
-          method: "PUT",
-          withCredentials: true,
-          data: { ...selectedItem.item, envelope_id: assignedEnv.current }
-        })
+        // Make API call
+        await fetch(
+          "/items",
+          "PUT",
+          { ...selectedItem.item, envelope_id: assignedEnv.current }
+        )
 
       } catch (error) {
-        console.log(error)
+        handleErrorAndRevertState(error)
       }
-
     } else {
+      // Handle when item is not dropped on droppable
       event.target.style.display = "block"
-      console.log('dropped without envelope')
     }
   }
+
+
+  // ********************************** API Calls ********************************** \\
+
+  const submit = async () => {
+    try {
+
+      updateItem(item, debouncedFormState)
+      return await fetch('/items',
+        "PUT",
+        formState
+      )
+
+    } catch (error) {
+      handleErrorAndRevertState(error)
+    } finally {
+      setReady(false)
+    }
+  }
+
+
+  // ********************************** Schedule Tasks ********************************** \\
+
+  useEffect(() => {
+    // This hook runs every time debounce changes, as long as the user has triggerd handleChange
+    ready && debouncedFormState && submit()
+  }, [debouncedFormState])
+
 
   const classes = useStyles()
   return (

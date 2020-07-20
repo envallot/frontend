@@ -6,7 +6,7 @@ import {
 import {
   Add as AddIcon,
 } from '@material-ui/icons';
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { Loader, Item, Envelope, DeleteIcon, ItemsBanner, Bar } from './index'
 import { useStyles } from '../styles'
 import { ItemFormModal, EnvelopeFormModal, EnvelopeDetailModal } from '../Modals'
@@ -54,11 +54,13 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
 
 
   // ********************************** App State ********************************** \\
+ 
   const [items, setItems] = useState([] as any)
   const [envelopes, setEnvelopes] = useState([])
 
 
   // ********************************** DND selectors ********************************** \\
+  
   const [selectedItem, setSelectedItem] = useState({ selected: false, item: {} })
   const [selectedEnvelope, setSelectedEnvelope] = useState({ selected: false, envelope: {} })
   const [deleteSelected, setDeleteSelected] = useState(false)
@@ -66,21 +68,14 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
 
 
   // ********************************** Show/Hide Modals ********************************** \\
+  
   const [openItemForm, setOpenItemForm] = useState(false);
   const [openEnvelopeForm, setOpenEnvelopeForm] = useState(false);
   const [envelopeDetail, setEnvelopeDetail] = useState({ open: false, envelope: {} });
 
 
-  // ********************************** helpers ********************************** \\
-  const unassignItems = (envelopeID: number) => {
-    const newItems = items.map((item: any) => {
-      return item.envelope_id === envelopeID ? { ...item, envelope_id: null } : item
-    })
-    setItems(newItems)
-  }
-
-
   // ********************************** API calls ********************************** \\
+ 
   const getEnvelopes = async () => {
     try {
       const { data } = await fetch(process.env.REACT_APP_URL + '/envelopes', "GET")
@@ -95,25 +90,59 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
       const { data } = await fetch('/items', "GET")
       setItems(data)
     } catch (error) {
-      console.log(error)
+      setAndShowError(error)
     }
   }
 
-  const hydrateState = () => {
+
+  // ********************************** helpers ********************************** \\
+
+  const unassignItems = (envelopeID: number) => {
+    const newItems = items.map((item: any) => {
+      return item.envelope_id === envelopeID ? { ...item, envelope_id: null } : item
+    })
+    setItems(newItems)
+  }
+
+  const handleErrorAndRevertState = (error: AxiosError) => {
+    setAndShowError(error)
     getItems()
     getEnvelopes()
   }
 
+  const deleteItem = (item: any) => {
+    const newItems = [...items]
+    const index = newItems.indexOf(item)
+    newItems.splice(index, 1)
+    setItems(newItems)
+  }
+
+  const updateItem = (oldItem: any, newItem: any) => {
+    const newItems = [...items]
+    const index = newItems.indexOf(oldItem)
+    newItems[index] = { ...newItems[index], ...newItem }
+    setItems(newItems)
+  }
+
+  const assignItem = (item: any, envelopeID: number) => {
+    const newItems = [...items]
+    const index = newItems.indexOf(item)  
+    newItems[index] = { ...item, envelope_id: envelopeID }
+    setItems(newItems)
+  }
+
+  
+  // ********************************** Schedule Tasks ********************************** \\
+ 
   useEffect(() => {
     if (user.authorized) {
-      hydrateState()
+      getItems()
+      getEnvelopes()
     }
   }, [user])
 
   useEffect(() => {
-
     (async () => {
-      setLoading(true)
       try {
         const { data } = await fetch('/users', 'POST')
         setUser({
@@ -122,8 +151,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
         })
 
       } catch (error) {
-        console.log(error)
-        setAndShowError(error)
+        handleErrorAndRevertState(error)
       } finally {
         setLoading(false)
       }
@@ -157,15 +185,17 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
                 // We only show the envelopes which have a null envelope_id, the rest go into their envelope
                 return !item.envelope_id ? (
                   <Item
+                    assignItem={assignItem}
+                    updateItem={updateItem}
+                    deleteItem={deleteItem}
                     setSelectedEnvelope={setSelectedEnvelope}
-                    items={items}
                     selectedEnvelope={selectedEnvelope}
-                    setItems={setItems}
                     key={item.id}
                     setSelectedItem={setSelectedItem} item={item}
                     selectedItem={selectedItem}
                     deleteSelected={deleteSelected}
                     setDeleteSelected={setDeleteSelected}
+                    handleErrorAndRevertState={handleErrorAndRevertState}
                   />
                 ) : null
               })}
@@ -194,7 +224,6 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
                 </Typography>
               </Grid>
 
-              {/* {Object.entries(envelopes).map(([id, envelope]: any) => { */}
               {envelopes.map((envelope: any) => {
                 return (
                   <Envelope
