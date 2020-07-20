@@ -54,13 +54,13 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
 
 
   // ********************************** App State ********************************** \\
- 
+
   const [items, setItems] = useState([] as any)
-  const [envelopes, setEnvelopes] = useState([])
+  const [envelopes, setEnvelopes] = useState([] as any)
 
 
   // ********************************** DND selectors ********************************** \\
-  
+
   const [selectedItem, setSelectedItem] = useState({ selected: false, item: {} })
   const [selectedEnvelope, setSelectedEnvelope] = useState({ selected: false, envelope: {} })
   const [deleteSelected, setDeleteSelected] = useState(false)
@@ -68,14 +68,14 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
 
 
   // ********************************** Show/Hide Modals ********************************** \\
-  
+
   const [openItemForm, setOpenItemForm] = useState(false);
   const [openEnvelopeForm, setOpenEnvelopeForm] = useState(false);
   const [envelopeDetail, setEnvelopeDetail] = useState({ open: false, envelope: {} });
 
 
   // ********************************** API calls ********************************** \\
- 
+
   const getEnvelopes = async () => {
     try {
       const { data } = await fetch(process.env.REACT_APP_URL + '/envelopes', "GET")
@@ -95,7 +95,17 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
   }
 
 
-  // ********************************** helpers ********************************** \\
+  // ********************************** Helpers ********************************** \\
+
+  const handleErrorAndRevertState = (error: AxiosError) => {
+    setAndShowError(error)
+    getItems()
+    getEnvelopes()
+  }
+
+
+
+  // ********************************** Item Helpers ********************************** \\
 
   const unassignItems = (envelopeID: number) => {
     const newItems = items.map((item: any) => {
@@ -104,11 +114,6 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     setItems(newItems)
   }
 
-  const handleErrorAndRevertState = (error: AxiosError) => {
-    setAndShowError(error)
-    getItems()
-    getEnvelopes()
-  }
 
   const deleteItem = (item: any) => {
     const newItems = [...items]
@@ -126,14 +131,24 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
 
   const assignItem = (item: any, envelopeID: number) => {
     const newItems = [...items]
-    const index = newItems.indexOf(item)  
+    const index = newItems.indexOf(item)
     newItems[index] = { ...item, envelope_id: envelopeID }
     setItems(newItems)
   }
 
-  
+
+  // ********************************** Envelope Helpers ********************************** \\
+
+  const deleteEnvelope = (envelope: any) => {
+    const newEnvelopes = [...envelopes as any]
+    const index = newEnvelopes.indexOf(envelope)
+    newEnvelopes.splice(index, 1)
+    setEnvelopes(newEnvelopes)
+  }
+
+
   // ********************************** Schedule Tasks ********************************** \\
- 
+
   useEffect(() => {
     if (user.authorized) {
       getItems()
@@ -227,6 +242,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
               {envelopes.map((envelope: any) => {
                 return (
                   <Envelope
+                    deleteEnvelope={deleteEnvelope}
                     unassignItems={unassignItems}
                     key={envelope.id}
                     selectedEnvelope={selectedEnvelope}
@@ -240,6 +256,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
                     setDeleteSelected={setDeleteSelected}
                     setItemsBannerSelected={setItemsBannerSelected}
                     itemsBannerSelected={itemsBannerSelected}
+                    handleErrorAndRevertState={handleErrorAndRevertState}
                   />
                 )
               })}

@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import { useStyles } from '../styles'
-import axios from 'axios'
+import { AxiosError } from 'axios'
+import { fetch } from '../utils'
 
 interface EnvelopePropsType {
   envelope: any
@@ -17,6 +18,8 @@ interface EnvelopePropsType {
   setItemsBannerSelected: (b: boolean) => void
   itemsBannerSelected: boolean
   unassignItems: (e: any) => void
+  handleErrorAndRevertState: (e: AxiosError) => void
+  deleteEnvelope: (e: any) => void
 }
 
 export default function Envelope({
@@ -25,18 +28,22 @@ export default function Envelope({
   selectedEnvelope,
   setEnvelopeDetail,
   deleteSelected,
-  setEnvelopes,
-  envelopes,
   selectedItem,
   setDeleteSelected,
   setItemsBannerSelected,
   itemsBannerSelected,
-  unassignItems
+  unassignItems,
+  handleErrorAndRevertState,
+  deleteEnvelope
 }: EnvelopePropsType) {
+  const classes = useStyles()
+
+
+  // ********************************** DND Handlers When Item Is Dragged ********************************** \\
 
   const handleDragOver = (event: any) => {
     event.preventDefault()
-
+    
     if (!selectedEnvelope.selected || selectedEnvelope.envelope.id !== envelope.id) {
       setSelectedEnvelope({
         selected: true,
@@ -46,16 +53,19 @@ export default function Envelope({
   }
 
   const handleDragLeave = (event: any) => {
-    console.log('envelope handle drag leave')
-
     event.preventDefault()
-    
-    selectedItem.selected &&
+
+    if (selectedItem.selected) {
+
       setSelectedEnvelope({
         selected: false,
         envelope: {}
       })
+    }
   }
+
+
+  // ********************************** DND Handlers When Envelope Is Dragged ********************************** \\
 
   const handleDragStart = (event: any) => {
     const target = event.target
@@ -71,49 +81,41 @@ export default function Envelope({
   }
 
   const handleDragEnd = async (event: any) => {
-    console.log('envelope drag ended')
 
     setSelectedEnvelope({
       selected: false,
       envelope: {}
     })
-
+    // If we are dragging env over delete image
     if (deleteSelected) {
+      // Delete and unselect delete
       setDeleteSelected(false)
-      console.log('deleting all the thing')
-      const newEnvelopes = [...envelopes]
-      const index = newEnvelopes.indexOf(envelope)
-      newEnvelopes.splice(index, 1)
-      setEnvelopes(newEnvelopes)
-
+      deleteEnvelope(envelope)
+      // Make API call
       try {
-        await axios(process.env.REACT_APP_URL + `/envelopes/${envelope.id}/?items=true`, {
-          method: "DELETE",
-          withCredentials: true
-        })
-
+        await fetch(`/envelopes/${envelope.id}/?items=true`, "DELETE")
       } catch (error) {
-        console.log(error)
+        // Show error and rehydrate old state
+        handleErrorAndRevertState(error)
       }
     } else if (itemsBannerSelected) {
-      console.log('itemsBannerSelected on envelope drag end')
+      // If we are deleting env and saving its items, unassign items
+      deleteEnvelope(envelope)
       setItemsBannerSelected(false)
       unassignItems(envelope.id)
+
       try {
-        await axios(process.env.REACT_APP_URL + `/envelopes/${envelope.id}`, {
-          method: "DELETE",
-          withCredentials: true
-        })
+        await fetch(`/envelopes/${envelope.id}`, "DELETE")
       } catch (error) {
-        console.log(error)
+        handleErrorAndRevertState(error)
       }
 
     } else {
+      // When dropped randomly, envelope reappears in env list
       event.target.style.display = "block"
     }
   }
 
-  const classes = useStyles()
   return (
     <Grid
       item xs={12}
