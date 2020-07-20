@@ -42,12 +42,10 @@ export default function ItemsBanner({ selectedEnvelope, setOpenItemForm, setItem
       onDragLeave={handleDragLeave}
     >
       <AddIcon
-        // className={selectedEnvelope.selected ? classes.noEvents : ''}
         fontSize={"large"}
         onClick={() => { setOpenItemForm(true) }}
       />
       <Typography
-        // className={selectedEnvelope.selected ? classes.noEvents : ''}
         display="block"
         variant="h4"
         component="h2"

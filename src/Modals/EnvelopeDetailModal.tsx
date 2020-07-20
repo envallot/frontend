@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import {
   Dialog,
-  Button,
   Avatar,
-  TextField,
   Typography,
   Container,
   Grid,
@@ -14,16 +12,18 @@ import { useDebounce } from '../hooks'
 import { makeStyles } from '@material-ui/core/styles';
 import { Email } from '@material-ui/icons'
 
-import axios from 'axios'
+import{ AxiosError } from 'axios'
+import { fetch } from '../utils'
 
 interface EnvelopeDetailModalPropsType {
   open: boolean
   handleClose: () => void
   items: any[]
-  setItems: (i: any) => void
   envelope: any
   setEnvelopes: (e: any) => void
   envelopes: any[]
+  handleErrorAndRevertState: (e: AxiosError) => void
+  unassignItem: (i:any) => void
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -75,11 +75,16 @@ export default function EnvelopeDetailModal({
   handleClose,
   open,
   items,
-  setItems,
   envelope,
   setEnvelopes,
-  envelopes
+  envelopes,
+  handleErrorAndRevertState,
+  unassignItem
 }: EnvelopeDetailModalPropsType) {
+  const classes = useStyles();
+
+
+  // ********************************** Form State ********************************** \\
 
   const [formState, setFormState] = useState({
     name: "",
@@ -87,55 +92,10 @@ export default function EnvelopeDetailModal({
     id: 0
   })
 
-  const [ready, setReady] = useState(false)
-
-  const submit = async () => {
-    
-    try {
-      const newEnvelopes = [...envelopes]
-      const index = newEnvelopes.indexOf(envelope)
-      newEnvelopes[index] = { ...newEnvelopes[index], ...debouncedFormState }
-
-      setEnvelopes(newEnvelopes)
-
-      return await axios(process.env.REACT_APP_URL + '/envelopes', {
-        method: "PUT",
-        withCredentials: true,
-        data: {
-          ...formState
-        }
-      })
-
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setReady(false)
-    }
-  }
-
-  useEffect(() => {
-    
-    if (open) { 
-      // Since this form is rendered on startup, not on open, we have to hydrate form state on open
-      setFormState({ ...envelope })
-    } else if (ready) { 
-      // Takes care of user closing modal before debounce triggers
-      const newEnvelopes = envelopes.map((env: any) => {
-        return env.id !== formState.id ? env : formState
-      })
-
-      setEnvelopes(newEnvelopes)
-    }
-
-  }, [open])
-
   // This hook listens to form state changing, but will delay its output using useTimeout internally
   const debouncedFormState = useDebounce(formState, 1000)
-
-  useEffect(() => {
-    // This hook runs every time debounce changes, as long as the user has triggerd handleChange
-    ready && debouncedFormState && submit()
-  }, [debouncedFormState])
+  // This makes sure api is called only after user has changed form state
+  const [ready, setReady] = useState(false)
 
   const handleChange = (event: any) => {
     // Standard form state management, but also triggers the ready state, which allows update query to run
@@ -151,23 +111,64 @@ export default function EnvelopeDetailModal({
     handleClose()
   }
 
-  const classes = useStyles();
 
-  const handleClickItem = async (event: any, item: any) => {
-    // Here we change the envelope_id of an item to null, and 
+  // ********************************** API Calls ********************************** \\
+
+  const submit = async () => {
+
     try {
-      const newItems = [...items]
-      const index = newItems.indexOf(item)
-      newItems[index] = { ...item, envelope_id: null }
-      setItems(newItems)
-      const { data } = await axios(process.env.REACT_APP_URL + "/items", {
-        method: "PUT",
-        withCredentials: true,
-        data: { ...item, envelope_id: null }
-      })
+      const newEnvelopes = [...envelopes]
+      const index = newEnvelopes.indexOf(envelope)
+      newEnvelopes[index] = { ...newEnvelopes[index], ...debouncedFormState }
+
+      setEnvelopes(newEnvelopes)
+
+      return await fetch('/envelopes', "PUT", formState)
 
     } catch (error) {
-      console.log('unassignitem error', error)
+      handleErrorAndRevertState(error)
+    } finally {
+      setReady(false)
+    }
+  }
+
+
+  // ********************************** Schedule Tasks ********************************** \\
+
+  useEffect(() => {
+    if (open) {
+      // Since this form is rendered on startup, not on open, we have to hydrate form state on open
+      setFormState({ ...envelope })
+    } else if (ready) {
+      // Takes care of user closing modal before debounce triggers
+      const newEnvelopes = envelopes.map((env: any) => {
+        return env.id !== formState.id ? env : formState
+      })
+
+      setEnvelopes(newEnvelopes)
+    }
+  }, [open])
+
+
+
+  useEffect(() => {
+    // This hook runs every time debounce changes, as long as the user has triggerd handleChange
+    if (ready && debouncedFormState) {
+      submit()
+    }
+  }, [debouncedFormState])
+
+
+  const handleClickItem = async (event: any, item: any) => {
+    try {
+      
+      // Here we change the envelope_id of an item to null, and then
+      // make the api call, reversing the transacion if there's an error
+      unassignItem(item)
+      await fetch("/items", "PUT", { ...item, envelope_id: null })
+
+    } catch (error) {
+      handleErrorAndRevertState(error)
     }
   }
 

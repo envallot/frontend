@@ -114,6 +114,12 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     setItems(newItems)
   }
 
+  const unassignItem = (item:any) => {
+     const newItems = [...items]
+      const index = newItems.indexOf(item)
+      newItems[index] = { ...item, envelope_id: null }
+      setItems(newItems)
+  }
 
   const deleteItem = (item: any) => {
     const newItems = [...items]
@@ -277,9 +283,10 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
           handleClose={() => { setOpenEnvelopeForm(false) }}
         />
         <EnvelopeDetailModal
+          handleErrorAndRevertState={handleErrorAndRevertState}
+          unassignItem={unassignItem}
           open={envelopeDetail.open}
           envelope={envelopeDetail.envelope}
-          setItems={setItems}
           items={items}
           setEnvelopes={setEnvelopes}
           envelopes={envelopes}
