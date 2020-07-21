@@ -19,3 +19,7 @@ export class NetworkError {
     this.message = message
   }
 }
+
+export const round = (num: number) => {
+  return Math.round(100 * num) / 100
+}

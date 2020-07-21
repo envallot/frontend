@@ -11,7 +11,7 @@ import { Loader, Item, Envelope, DeleteIcon, ItemsBanner, Bar } from './index'
 import { useStyles } from '../styles'
 import { ItemFormModal, EnvelopeFormModal, EnvelopeDetailModal } from '../Modals'
 import Grid from "@material-ui/core/Grid";
-import { fetch, NetworkError } from '../utils'
+import { fetch, NetworkError, round } from '../utils'
 
 // class NetworkError {
 //   message: string
@@ -131,12 +131,20 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     setItems(newItems)
   }
 
-  const unassignItem = (item: any) => {
+  const unassignItem = (item: any, envelopeID:number) => {
     const newItems = [...items]
     const index = newItems.indexOf(item)
     newItems[index] = { ...item, envelope_id: null }
     setItems(newItems)
 
+    const newEnvelopes = envelopes.map((e:any) => {
+      if(e.id === envelopeID) {
+        e.total = round(e.total - item.amount)
+        return e
+      }
+      return e
+    })
+    setEnvelopes(newEnvelopes)
   }
 
   const deleteItem = (item: any) => {
@@ -161,7 +169,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
 
     const newEnvelopes = envelopes.map((e: any) => {
       if (e.id === envelopeID) {
-        e.total = e.total + item.amount 
+        e.total = round(e.total + item.amount) 
         return e
       }
       return e

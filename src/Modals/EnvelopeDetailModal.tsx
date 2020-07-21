@@ -23,7 +23,7 @@ interface EnvelopeDetailModalPropsType {
   setEnvelopes: (e: any) => void
   envelopes: any[]
   handleErrorAndRevertState: (e: NetworkError) => void
-  unassignItem: (i:any) => void
+  unassignItem: (i:any, e:any) => void
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -164,8 +164,8 @@ export default function EnvelopeDetailModal({
       
       // Here we change the envelope_id of an item to null, and then
       // make the api call, reversing the transacion if there's an error
-      unassignItem(item)
-      await fetch("/items", "PUT", { ...item, envelope_id: null })
+      unassignItem(item, envelope.id)
+      await fetch("/envelopes/unassignItem", "PUT", { id:envelope.id, itemID: item.id })
 
     } catch (error) {
       handleErrorAndRevertState(error)
@@ -197,6 +197,8 @@ export default function EnvelopeDetailModal({
             id="name"
             value={formState.name}
           />
+
+          <p className={classes.labelModal}>Total: {envelope.total} </p>
 
           <label className={classes.labelModal} htmlFor="limit_amount">
             Limit:

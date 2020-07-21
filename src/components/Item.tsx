@@ -166,7 +166,7 @@ export default function Item({
       try {
         if (selectedItem.item.amount + selectedEnvelope.envelope.total > selectedEnvelope.envelope.limit_amount) {
           console.log('toobig', selectedItem.item.amount, selectedEnvelope.envelope.total )
-          handleErrorAndRevertState({code:"400", message:"Not enough money in this envelope"})
+          handleErrorAndRevertState({code:"", message:"Not enough money in this envelope"})
           return
         }
         // Hold reference to our envelope_id here

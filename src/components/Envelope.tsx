@@ -130,13 +130,14 @@ export default function Envelope({
       <Paper
         style={{
           display: "flex",
+          flexDirection:"row",
           justifyContent: "space-between",
           pointerEvents: selectedItem.selected || selectedEnvelope.selected ? "none" : "auto"
         }}
         className={selectedEnvelope.envelope.id === envelope.id && selectedItem.selected ? classes.hovering : classes.paper}
       >
-        <span>{envelope.name}</span>
-        <span>{envelope.total} / {envelope.limit_amount} </span>
+        <span>Name: {envelope.name}</span>
+        <span>Total / Limit: {envelope.total} / {envelope.limit_amount} </span>
 
       </Paper>
     </Grid>)
