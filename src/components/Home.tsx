@@ -11,19 +11,17 @@ import { Loader, Item, Envelope, DeleteIcon, ItemsBanner, Bar } from './index'
 import { useStyles } from '../styles'
 import { ItemFormModal, EnvelopeFormModal, EnvelopeDetailModal } from '../Modals'
 import Grid from "@material-ui/core/Grid";
-import { fetch } from '../utils'
+import { fetch, NetworkError } from '../utils'
 
-class NetworkError {
-  message: string
-  code: string
-  name: string
+// class NetworkError {
+//   message: string
+//   code: string
 
-  constructor(code: string, name: string, message: string) {
-    this.code = code
-    this.name = name
-    this.message = message
-  }
-}
+//   constructor(code: string, message: string) {
+//     this.code = code
+//     this.message = message
+//   }
+// }
 
 interface User {
   authorized: boolean,
@@ -75,7 +73,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
   const [envelopeDetail, setEnvelopeDetail] = useState({ open: false, envelope: {} });
 
 
-  useEffect(()=>{console.log('newItems', items)}, [items])
+  useEffect(() => { console.log('newItems', items) }, [items])
   // ********************************** API calls ********************************** \\
 
   const getEnvelopes = async () => {
@@ -117,7 +115,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
 
   // ********************************** Helpers ********************************** \\
 
-  const handleErrorAndRevertState = (error: AxiosError) => {
+  const handleErrorAndRevertState = (error:NetworkError) => {
     setAndShowError(error)
     getItems()
     getEnvelopes()
@@ -138,6 +136,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     const index = newItems.indexOf(item)
     newItems[index] = { ...item, envelope_id: null }
     setItems(newItems)
+
   }
 
   const deleteItem = (item: any) => {
@@ -159,6 +158,15 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     const index = newItems.indexOf(item)
     newItems[index] = { ...item, envelope_id: envelopeID }
     setItems(newItems)
+
+    const newEnvelopes = envelopes.map((e: any) => {
+      if (e.id === envelopeID) {
+        e.total = e.total + item.amount 
+        return e
+      }
+      return e
+    })
+    setEnvelopes(newEnvelopes)
   }
 
 

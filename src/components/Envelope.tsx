@@ -3,7 +3,7 @@ import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import { useStyles } from '../styles'
 import { AxiosError } from 'axios'
-import { fetch } from '../utils'
+import { fetch, NetworkError } from '../utils'
 
 interface EnvelopePropsType {
   envelope: any
@@ -18,7 +18,7 @@ interface EnvelopePropsType {
   setItemsBannerSelected: (b: boolean) => void
   itemsBannerSelected: boolean
   unassignItems: (e: any) => void
-  handleErrorAndRevertState: (e: AxiosError) => void
+  handleErrorAndRevertState: (e: NetworkError) => void
   deleteEnvelope: (e: any) => void
 }
 
@@ -36,14 +36,14 @@ export default function Envelope({
   handleErrorAndRevertState,
   deleteEnvelope
 }: EnvelopePropsType) {
-  const classes = useStyles()
 
+  const classes = useStyles()
 
   // ********************************** DND Handlers When Item Is Dragged ********************************** \\
 
   const handleDragOver = (event: any) => {
     event.preventDefault()
-    
+
     if (!selectedEnvelope.selected || selectedEnvelope.envelope.id !== envelope.id) {
       setSelectedEnvelope({
         selected: true,
@@ -96,7 +96,7 @@ export default function Envelope({
         await fetch(`/envelopes/${envelope.id}/?items=true`, "DELETE")
       } catch (error) {
         // Show error and rehydrate old state
-        handleErrorAndRevertState(error)
+        handleErrorAndRevertState(new NetworkError(error.code, error.message))
       }
     } else if (itemsBannerSelected) {
       // If we are deleting env and saving its items, unassign items
@@ -107,7 +107,7 @@ export default function Envelope({
       try {
         await fetch(`/envelopes/${envelope.id}`, "DELETE")
       } catch (error) {
-        handleErrorAndRevertState(error)
+        handleErrorAndRevertState(new NetworkError(error.code, error.message))
       }
 
     } else {
@@ -129,11 +129,15 @@ export default function Envelope({
     >
       <Paper
         style={{
+          display: "flex",
+          justifyContent: "space-between",
           pointerEvents: selectedItem.selected || selectedEnvelope.selected ? "none" : "auto"
         }}
         className={selectedEnvelope.envelope.id === envelope.id && selectedItem.selected ? classes.hovering : classes.paper}
       >
-        {envelope.name}:{envelope.limit_amount}
+        <span>{envelope.name}</span>
+        <span>{envelope.total} / {envelope.limit_amount} </span>
+
       </Paper>
     </Grid>)
 

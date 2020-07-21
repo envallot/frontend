@@ -13,7 +13,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Email } from '@material-ui/icons'
 
 import{ AxiosError } from 'axios'
-import { fetch } from '../utils'
+import { fetch, NetworkError } from '../utils'
 
 interface EnvelopeDetailModalPropsType {
   open: boolean
@@ -22,7 +22,7 @@ interface EnvelopeDetailModalPropsType {
   envelope: any
   setEnvelopes: (e: any) => void
   envelopes: any[]
-  handleErrorAndRevertState: (e: AxiosError) => void
+  handleErrorAndRevertState: (e: NetworkError) => void
   unassignItem: (i:any) => void
 }
 

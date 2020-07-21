@@ -9,3 +9,13 @@ export const fetch = (path: string, method: Method, data: any = {}) => {
     withCredentials: true
   })
 }
+
+export class NetworkError {
+  message: string
+  code: string
+
+  constructor(code: string, message: string, ) {
+    this.code = code
+    this.message = message
+  }
+}

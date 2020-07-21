@@ -21,7 +21,6 @@ export default function App() {
 
   const [error, setError] = useState({
     code: '',
-    name: '',
     message: '',
   })
 
@@ -31,15 +30,13 @@ export default function App() {
     setShowErrorModal(false)
     setError({
       code: '',
-      name: '',
       message: ''
     })
   }
 
-  const setAndShowError = ({ code, name, message }: any) => {
+  const setAndShowError = ({ code, message }: any) => {
     setError({
       code,
-      name,
       message,
     })
     setShowErrorModal(true)
@@ -65,7 +62,6 @@ export default function App() {
           handleClose={handleCloseErrorModal}
           message={error.message}
           code={error.code}
-          name={error.name}
         />
       </div>
     </Router>

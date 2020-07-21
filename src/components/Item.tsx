@@ -4,7 +4,7 @@ import Grid from "@material-ui/core/Grid";
 import { useStyles } from '../styles'
 import { useDebounce } from '../hooks'
 import { AxiosError } from 'axios'
-import { fetch } from '../utils'
+import { fetch, NetworkError } from '../utils'
 
 interface ItemPropsType {
   item: any
@@ -14,7 +14,7 @@ interface ItemPropsType {
   selectedItem: any
   deleteSelected: boolean
   setDeleteSelected: (b: boolean) => void
-  handleErrorAndRevertState: (e: AxiosError) => void
+  handleErrorAndRevertState: (e: NetworkError) => void
   deleteItem: (i: any) => void
   updateItem: (i: any, a: any) => void
   assignItem: (i: any, e: number) => void
@@ -63,6 +63,8 @@ export default function Item({
 }: ItemPropsType) {
 
   const assignedEnv = useRef(0)
+
+  const assignedItem = useRef(0)
 
   // ********************************** Form State  ********************************** \\
 
@@ -156,16 +158,29 @@ export default function Item({
         await fetch(`/items/${item.id}`, "DELETE")
 
       } catch (error) {
-        handleErrorAndRevertState(error)
+
+        handleErrorAndRevertState(new NetworkError(error.code, error.message))
       }
 
     } else if (selectedEnvelope.selected && selectedItem.selected) {
       try {
+        if (selectedItem.item.amount + selectedEnvelope.envelope.total > selectedEnvelope.envelope.limit_amount) {
+          console.log('toobig', selectedItem.item.amount, selectedEnvelope.envelope.total )
+          handleErrorAndRevertState({code:"400", message:"Not enough money in this envelope"})
+          return
+        }
         // Hold reference to our envelope_id here
         assignedEnv.current = selectedEnvelope.envelope.id
+        assignedItem.current = selectedItem.item.id
+
 
         // Unselect envelope to keep UI snappy
         setSelectedEnvelope({
+          selected: false,
+          envelope: {}
+        })
+
+        setSelectedItem({
           selected: false,
           envelope: {}
         })
@@ -175,13 +190,13 @@ export default function Item({
 
         // Make API call
         await fetch(
-          "/items",
+          "/items/assign",
           "PUT",
-          { ...selectedItem.item, envelope_id: assignedEnv.current }
+          { id :assignedItem.current, envelope_id: assignedEnv.current }
         )
 
       } catch (error) {
-        handleErrorAndRevertState(error)
+        handleErrorAndRevertState(new NetworkError(error.code, error.message))
       }
     } else {
       // Handle when item is not dropped on droppable

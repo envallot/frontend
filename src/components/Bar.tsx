@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetch } from '../utils'
+import { fetch, NetworkError } from '../utils'
 import { useDebounce } from '../hooks'
 
 import {
@@ -20,7 +20,7 @@ interface AppBarPropTypes {
   user: any,
   setUser: (u: any) => void
   getOrCreateUser: () => void
-  setAndShowError: (e:AxiosError) => void
+  setAndShowError: (e:NetworkError) => void
 }
 
 /**

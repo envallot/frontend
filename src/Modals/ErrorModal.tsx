@@ -11,7 +11,6 @@ import {
 interface ErrorModalPropsType {
   open: boolean
   message: string
-  name: string
   code: string
   handleClose: () => void
 }
