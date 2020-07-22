@@ -168,10 +168,14 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     setEnvelopes(newEnvelopes)
   }
 
-  const updateEnvelope = (oldEnvelope: Envelope, newEnvelope: Envelope) => {
-    const newEnvelopes = [...envelopes]
-    const index = newEnvelopes.indexOf(oldEnvelope)
-    newEnvelopes[index] = { ...newEnvelopes[index], ...newEnvelope }
+  const updateEnvelope = (id: number, newEnvelope: Envelope) => {
+    
+    const newEnvelopes = envelopes.map((env: Envelope) => {
+      if (env.id === id){
+        return newEnvelope
+      }
+      return env
+    })
 
     setEnvelopes(newEnvelopes)
   }

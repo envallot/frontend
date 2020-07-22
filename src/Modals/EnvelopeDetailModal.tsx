@@ -13,6 +13,7 @@ import { Email } from '@material-ui/icons'
 
 import { fetch, NetworkError, validateMoney, Item, Envelope } from '../utils'
 import { useStyles } from '../styles'
+
 interface EnvelopeDetailModalPropsType {
   open: boolean
   handleClose: () => void
@@ -22,7 +23,7 @@ interface EnvelopeDetailModalPropsType {
   envelopes: Envelope[]
   handleErrorAndRevertState: (e: NetworkError) => void
   unassignItem: (i: Item, eID: number) => void
-  updateEnvelope: (e:Envelope, e2: Envelope) => void
+  updateEnvelope: (e:number, e2: Envelope) => void
 }
 
 
@@ -96,7 +97,8 @@ export default function EnvelopeDetailModal({
   const submit = async () => {
 
     try {
-      updateEnvelope(envelope, debouncedFormState)
+      console.log('change submitted', formState, debouncedFormState)
+      updateEnvelope(envelope.id, debouncedFormState)
       await fetch('/envelopes', "PUT", formState)
     } catch (error) {
       handleErrorAndRevertState(error)
@@ -145,6 +147,7 @@ export default function EnvelopeDetailModal({
   }, [debouncedFormState])
 
   useEffect(() => {
+    console.log('total changed', total)
     setTotal(envelope.total)
   }, [envelope.total])
 
