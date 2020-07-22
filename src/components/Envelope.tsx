@@ -132,6 +132,7 @@ export default function Envelope({
           display: "flex",
           flexDirection:"row",
           justifyContent: "space-between",
+          pointerEvents: "none"
         }}
         className={selectedEnvelope.envelope.id === envelope.id && selectedItem.selected ? classes.hovering : classes.paper}
       >
