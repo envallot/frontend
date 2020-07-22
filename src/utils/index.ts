@@ -10,6 +10,13 @@ export const fetch = (path: string, method: Method, data: any = {}) => {
   })
 }
 
+export interface User {
+  authorized: boolean,
+  id: string,
+  username: string,
+  email: string
+}
+
 export class NetworkError {
   message: string
   code: string
@@ -19,6 +26,45 @@ export class NetworkError {
     this.message = message
   }
 }
+
+export class Item {
+  name: string
+  amount: number
+  id: number
+  envelope_id: number | null
+
+  constructor(
+    name: string,
+    amount: number,
+    id: number,
+    envelopeID: number | null
+  ) {
+    this.name = name
+    this.amount = amount
+    this.id = id
+    this.envelope_id = envelopeID
+  }
+}
+
+export class Envelope {
+  name: string
+  limit_amount: number
+  id: number
+  total?: number
+  
+  constructor(
+    name: string,
+    limit_amount: number,
+    id: number,
+    total: number
+  ) {
+    this.name = name
+    this.limit_amount = limit_amount
+    this.id = id
+    this.total = total
+  }
+}
+
 
 export const round = (num: number) => {
   return Math.round(100 * num) / 100

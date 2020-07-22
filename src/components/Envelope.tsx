@@ -1,28 +1,26 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import { useStyles } from '../styles'
-import { AxiosError } from 'axios'
-import { fetch, NetworkError } from '../utils'
+import { fetch, NetworkError, Envelope,  } from '../utils'
 
 interface EnvelopePropsType {
-  envelope: any
-  envelopes: any[]
+  envelope: Envelope
+  envelopes: Envelope[]
   selectedEnvelope: any
   selectedItem: any
   setSelectedEnvelope: (e: any) => void
   setEnvelopeDetail: (e: any) => void
   deleteSelected: boolean
-  setEnvelopes: (e: any) => void
   setDeleteSelected: (d: any) => void
   setItemsBannerSelected: (b: boolean) => void
   itemsBannerSelected: boolean
-  unassignItems: (e: any) => void
+  unassignItems: (e: number) => void
   handleErrorAndRevertState: (e: NetworkError) => void
-  deleteEnvelope: (e: any) => void
+  deleteEnvelope: (e: Envelope) => void
 }
 
-export default function Envelope({
+export default function EnvelopeComponent({
   envelope,
   setSelectedEnvelope,
   selectedEnvelope,

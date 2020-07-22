@@ -1,34 +1,20 @@
 import React, { useEffect, useState } from 'react';
+
+import { Container, Typography, Grid } from '@material-ui/core';
+import { Add as AddIcon } from '@material-ui/icons';
+
 import {
-  Container,
-  Typography,
-} from '@material-ui/core';
-import {
-  Add as AddIcon,
-} from '@material-ui/icons';
-import axios, { AxiosError } from 'axios'
-import { Loader, Item, Envelope, DeleteIcon, ItemsBanner, Bar } from './index'
-import { useStyles } from '../styles'
+  Loader,
+  ItemComponent,
+  EnvelopeComponent,
+  DeleteIcon,
+  ItemsBanner,
+  Bar
+} from './index'
+
 import { ItemFormModal, EnvelopeFormModal, EnvelopeDetailModal } from '../Modals'
-import Grid from "@material-ui/core/Grid";
-import { fetch, NetworkError, round } from '../utils'
+import { fetch, NetworkError, round, Item, Envelope, User } from '../utils'
 
-// class NetworkError {
-//   message: string
-//   code: string
-
-//   constructor(code: string, message: string) {
-//     this.code = code
-//     this.message = message
-//   }
-// }
-
-interface User {
-  authorized: boolean,
-  id: string,
-  username: string,
-  email: string
-}
 
 interface HomePropType {
   setUser: (arg0: User) => void,
@@ -36,7 +22,7 @@ interface HomePropType {
   error: NetworkError,
   setError: (arg0: NetworkError) => void
   setShowErrorModal: (arg0: boolean) => void
-  setAndShowError: (e: any) => void
+  setAndShowError: (e: NetworkError) => void
 }
 
 /**
@@ -54,8 +40,8 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
 
   // ********************************** App State ********************************** \\
 
-  const [items, setItems] = useState([] as any)
-  const [envelopes, setEnvelopes] = useState([] as any)
+  const [items, setItems] = useState([] as Item[])
+  const [envelopes, setEnvelopes] = useState([] as Envelope[])
 
 
   // ********************************** DND selectors ********************************** \\
@@ -70,10 +56,9 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
 
   const [openItemForm, setOpenItemForm] = useState(false);
   const [openEnvelopeForm, setOpenEnvelopeForm] = useState(false);
-  const [envelopeDetail, setEnvelopeDetail] = useState({ open: false, envelope: {} });
+  const [envelopeDetail, setEnvelopeDetail] = useState({ open: false, envelope: new Envelope("", 0, 0, 0)});
 
 
-  useEffect(() => { console.log('newItems', items) }, [items])
   // ********************************** API calls ********************************** \\
 
   const getEnvelopes = async () => {
@@ -124,15 +109,15 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
 
   // ********************************** Item Helpers ********************************** \\
 
-  const unassignItem = (item: any, envelopeID: number) => {
+  const unassignItem = (item: Item, envelopeID: number) => {
     const newItems = [...items]
     const index = newItems.indexOf(item)
     newItems[index] = { ...item, envelope_id: null }
     setItems(newItems)
 
-    const newEnvelopes = envelopes.map((e: any) => {
+    const newEnvelopes = envelopes.map((e: Envelope) => {
       if (e.id === envelopeID) {
-        e.total = round(e.total - item.amount)
+        e.total = round(e.total! - item.amount)
         return e
       }
       return e
@@ -140,33 +125,33 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     setEnvelopes(newEnvelopes)
   }
 
-  const deleteItem = (item: any) => {
+  const deleteItem = (item: Item) => {
     const newItems = [...items]
     const index = newItems.indexOf(item)
     newItems.splice(index, 1)
     setItems(newItems)
   }
 
-  const updateItem = (oldItem: any, newItem: any) => {
+  const updateItem = (oldItem: Item, newItem: Item) => {
     const newItems = [...items]
     const index = newItems.indexOf(oldItem)
     newItems[index] = { ...newItems[index], ...newItem }
     setItems(newItems)
   }
 
-  const addItem = (item: any) => {
+  const addItem = (item: Item) => {
     setItems([item, ...items])
   }
 
-  const assignItem = (item: any, envelopeID: number) => {
+  const assignItem = (item: Item, envelopeID: number) => {
     const newItems = [...items]
     const index = newItems.indexOf(item)
     newItems[index] = { ...item, envelope_id: envelopeID }
     setItems(newItems)
 
-    const newEnvelopes = envelopes.map((e: any) => {
+    const newEnvelopes = envelopes.map((e: Envelope) => {
       if (e.id === envelopeID) {
-        e.total = round(e.total + item.amount)
+        e.total = round(e.total! + item.amount)
         return e
       }
       return e
@@ -177,14 +162,14 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
 
   // ********************************** Envelope Helpers ********************************** \\
 
-  const deleteEnvelope = (envelope: any) => {
-    const newEnvelopes = [...envelopes as any]
+  const deleteEnvelope = (envelope: Envelope) => {
+    const newEnvelopes = [...envelopes]
     const index = newEnvelopes.indexOf(envelope)
     newEnvelopes.splice(index, 1)
     setEnvelopes(newEnvelopes)
   }
 
-  const updateEnvelope = (oldEnvelope: any, newEnvelope:any) => {
+  const updateEnvelope = (oldEnvelope: Envelope, newEnvelope: Envelope) => {
     const newEnvelopes = [...envelopes]
     const index = newEnvelopes.indexOf(oldEnvelope)
     newEnvelopes[index] = { ...newEnvelopes[index], ...newEnvelope }
@@ -192,12 +177,12 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     setEnvelopes(newEnvelopes)
   }
 
-  const addEnvelope = (envelope: any) => {
+  const addEnvelope = (envelope: Envelope) => {
     setEnvelopes([envelope, ...envelopes])
   }
 
   const unassignItems = (envelopeID: number) => {
-    const newItems = items.map((item: any) => {
+    const newItems = items.map((item: Item) => {
       return item.envelope_id === envelopeID ? { ...item, envelope_id: null } : item
     })
     setItems(newItems)
@@ -244,10 +229,10 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
                 itemsBannerSelected={itemsBannerSelected}
               />
 
-              {items.map((item: any) => {
+              {items.map((item: Item) => {
                 // We only show the envelopes which have a null envelope_id, the rest go into their envelope
                 return !item.envelope_id ? (
-                  <Item
+                  <ItemComponent
                     assignItem={assignItem}
                     updateItem={updateItem}
                     deleteItem={deleteItem}
@@ -287,9 +272,9 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
                 </Typography>
               </Grid>
 
-              {envelopes.map((envelope: any) => {
+              {envelopes.map((envelope: Envelope) => {
                 return (
-                  <Envelope
+                  <EnvelopeComponent
                     deleteEnvelope={deleteEnvelope}
                     unassignItems={unassignItems}
                     key={envelope.id}
@@ -298,7 +283,6 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
                     setSelectedEnvelope={setSelectedEnvelope}
                     setEnvelopeDetail={setEnvelopeDetail}
                     deleteSelected={deleteSelected}
-                    setEnvelopes={setEnvelopes}
                     envelopes={envelopes}
                     selectedItem={selectedItem}
                     setDeleteSelected={setDeleteSelected}
@@ -333,7 +317,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
           setEnvelopes={setEnvelopes}
           envelopes={envelopes}
           updateEnvelope={updateEnvelope}
-          handleClose={() => { setEnvelopeDetail({ open: false, envelope: {} }) }}
+          handleClose={() => { setEnvelopeDetail({ open: false, envelope: new Envelope("", 0, 0, 0) }) }}
         />
       </Container>
   )

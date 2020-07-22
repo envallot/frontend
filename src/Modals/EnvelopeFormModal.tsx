@@ -11,14 +11,14 @@ import {
 // import { makeStyles } from '@material-ui/core/styles';
 import { Email } from '@material-ui/icons'
 
-import { fetch, NetworkError, validateMoney } from '../utils'
+import { fetch, NetworkError, validateMoney, Envelope } from '../utils'
 import { useStyles } from '../styles'
 
 interface EnvelopeFormModalPropsType {
   open: boolean
   handleClose: () => void
   setAndShowError: (e: NetworkError) => void
-  addEnvelope: (e: any) => void
+  addEnvelope: (e: Envelope) => void
 }
 
 export default function EnvelopeFormModal({ addEnvelope, setAndShowError, handleClose, open }: EnvelopeFormModalPropsType) {

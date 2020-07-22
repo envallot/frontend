@@ -11,18 +11,18 @@ import {
 import { useDebounce } from '../hooks'
 import { Email } from '@material-ui/icons'
 
-import { fetch, NetworkError, validateMoney } from '../utils'
+import { fetch, NetworkError, validateMoney, Item, Envelope } from '../utils'
 import { useStyles } from '../styles'
 interface EnvelopeDetailModalPropsType {
   open: boolean
   handleClose: () => void
-  items: any[]
-  envelope: any
-  setEnvelopes: (e: any) => void
-  envelopes: any[]
+  items: Item[]
+  envelope: Envelope 
+  setEnvelopes: (e: Envelope[]) => void
+  envelopes: Envelope[]
   handleErrorAndRevertState: (e: NetworkError) => void
-  unassignItem: (i: any, e: any) => void
-  updateEnvelope: (e:any, e2: any) => void
+  unassignItem: (i: Item, eID: number) => void
+  updateEnvelope: (e:Envelope, e2: Envelope) => void
 }
 
 
@@ -53,7 +53,7 @@ export default function EnvelopeDetailModal({
 
   const [formState, setFormState] = useState({
     name: "",
-    limit_amount: "",
+    limit_amount: 0,
     id: 0
   })
 
@@ -70,7 +70,7 @@ export default function EnvelopeDetailModal({
   const handleChange = (event: any) => {
     if (event.target.name === "limit_amount") {
       const dollars = validateMoney(event.target.value)
-      if (!dollars || dollars < envelope.total) {
+      if (!dollars || parseInt(event.target.value) < envelope.total!) {
         setValid(false)
       } else if (!valid) {
         setValid(true)
@@ -119,7 +119,7 @@ export default function EnvelopeDetailModal({
       setFormState({ ...envelope })
     } else if (ready) {
       // Takes care of user closing modal before debounce triggers
-      const newEnvelopes = envelopes.map((env: any) => {
+      const newEnvelopes = envelopes.map((env: Envelope) => {
         return env.id !== formState.id ? env : formState
       })
 
@@ -149,7 +149,7 @@ export default function EnvelopeDetailModal({
   }, [envelope.total])
 
 
-  const handleClickItem = async (event: any, item: any) => {
+  const handleClickItem = async (event: any, item: Item) => {
     try {
       // Here we change the envelope_id of an item to null, and then
       // make the api call, reversing the transacion if there's an error
@@ -205,7 +205,7 @@ export default function EnvelopeDetailModal({
             value={formState.limit_amount}
           />
         </form>
-        {items.filter((i: any) => i.envelope_id === envelope.id).length > 0 ?
+        {items.filter((i: Item) => i.envelope_id === envelope.id).length > 0 ?
           <Typography
             component="h1"
             variant="h5"
@@ -216,7 +216,7 @@ export default function EnvelopeDetailModal({
 
 
         <Grid container direction="column" >
-          {items.map((item: any) => {
+          {items.map((item: Item) => {
             return item.envelope_id !== envelope.id ? null :
 
               <Grid

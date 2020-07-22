@@ -3,11 +3,10 @@ import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import { useStyles } from '../styles'
 import { useDebounce } from '../hooks'
-import { AxiosError } from 'axios'
-import { fetch, NetworkError, validateMoney } from '../utils'
+import { fetch, NetworkError, validateMoney, Item } from '../utils'
 
 interface ItemPropsType {
-  item: any
+  item: Item
   setSelectedItem: (i: any) => void
   setSelectedEnvelope: (e: any) => void
   selectedEnvelope: any
@@ -15,13 +14,13 @@ interface ItemPropsType {
   deleteSelected: boolean
   setDeleteSelected: (b: boolean) => void
   handleErrorAndRevertState: (e: NetworkError) => void
-  deleteItem: (i: any) => void
-  updateItem: (i: any, a: any) => void
-  assignItem: (i: any, e: number) => void
+  deleteItem: (i: Item) => void
+  updateItem: (i: Item, a: Item) => void
+  assignItem: (i: Item, e: number) => void
 }
 
 
-export default function Item({
+export default function ItemComponent({
   item,
   selectedItem,
   setSelectedItem,
@@ -36,8 +35,8 @@ export default function Item({
 }: ItemPropsType) {
 
   const assignedEnv = useRef(0)
-
   const assignedItem = useRef(0)
+
 
   // ********************************** Form State  ********************************** \\
 
