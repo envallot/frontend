@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import { useStyles } from '../styles'
-import { fetch, NetworkError, Envelope,  } from '../utils'
+import { fetch, NetworkError, Envelope, } from '../utils'
 
 interface EnvelopePropsType {
   envelope: Envelope
@@ -41,8 +41,8 @@ export default function EnvelopeComponent({
 
   const handleDragOver = (event: any) => {
     event.preventDefault()
-
-    if (!selectedEnvelope.selected || selectedEnvelope.envelope.id !== envelope.id) {
+    
+      if (!selectedEnvelope.selected ) {
       setSelectedEnvelope({
         selected: true,
         envelope
@@ -128,7 +128,7 @@ export default function EnvelopeComponent({
       <Paper
         style={{
           display: "flex",
-          flexDirection:"row",
+          flexDirection: "row",
           justifyContent: "space-between",
           pointerEvents: "none"
         }}

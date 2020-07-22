@@ -15,6 +15,8 @@ import { fetch, NetworkError, validateMoney, Item, Envelope } from '../utils'
 import { useStyles } from '../styles'
 
 interface EnvelopeDetailModalPropsType {
+  setSelectedEnvelope:(e:any) => void
+  selectedEnvelope: any
   open: boolean
   handleClose: () => void
   items: Item[]
@@ -37,6 +39,8 @@ interface EnvelopeDetailModalPropsType {
  * @param param0 props
  */
 export default function EnvelopeDetailModal({
+  selectedEnvelope,
+  setSelectedEnvelope,
   handleClose,
   open,
   items,
@@ -98,6 +102,7 @@ export default function EnvelopeDetailModal({
 
     try {
       console.log('change submitted', formState, debouncedFormState)
+      
       updateEnvelope(envelope.id, debouncedFormState)
       await fetch('/envelopes', "PUT", formState)
     } catch (error) {
@@ -181,7 +186,7 @@ export default function EnvelopeDetailModal({
           onSubmit={handleSubmit}
         >
           <label className={classes.labelModal} htmlFor="name">
-            Name:
+            Name: 
           </label>
           <input
             className={classes.borderlessInputModal}
@@ -193,7 +198,7 @@ export default function EnvelopeDetailModal({
           />
 
           <label className={classes.labelModal} htmlFor="limit_amount">
-            Limit:
+            Limit: 
             </label>
           <input
             onBlur={handleBlur}
@@ -215,8 +220,6 @@ export default function EnvelopeDetailModal({
           >
             Items:
           </Typography> : null}
-
-
 
         <Grid container direction="column" >
           {items.map((item: Item) => {

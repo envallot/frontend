@@ -20,7 +20,7 @@ interface AppBarPropTypes {
   user: User,
   setUser: (u: User) => void
   getOrCreateUser: () => void
-  setAndShowError: (e:NetworkError) => void
+  setAndShowError: (e: NetworkError) => void
 }
 
 /**
@@ -32,7 +32,7 @@ interface AppBarPropTypes {
  */
 export default function Bar({ user, setUser, getOrCreateUser, setAndShowError }: AppBarPropTypes) {
 
-    // ********************************** Form State ********************************** \\
+  // ********************************** Form State ********************************** \\
 
   const [formState, setFormState] = useState({
     ...user
@@ -51,7 +51,8 @@ export default function Bar({ user, setUser, getOrCreateUser, setAndShowError }:
 
   const debouncedFormState = useDebounce(formState, 1000)
 
-    // ********************************** API calls ********************************** \\
+  
+  // ********************************** API calls ********************************** \\
 
   const submit = async () => {
     try {
@@ -71,7 +72,7 @@ export default function Bar({ user, setUser, getOrCreateUser, setAndShowError }:
     }
   }
 
-    // ********************************** Schedule Tasks ********************************** \\
+  // ********************************** Schedule Tasks ********************************** \\
 
   useEffect(() => {
     if (ready) {
@@ -98,7 +99,7 @@ export default function Bar({ user, setUser, getOrCreateUser, setAndShowError }:
 
         <form onSubmit={(e: any) => e.preventDefault()}>
 
-          <label className={classes.borderlessInputBar}htmlFor="username">Welcome, </label>
+          <label className={classes.borderlessInputBar} htmlFor="username">Welcome, </label>
           <input
             className={classes.borderlessInputBar}
             id="username"

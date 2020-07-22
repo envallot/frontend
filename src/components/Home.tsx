@@ -56,7 +56,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
 
   const [openItemForm, setOpenItemForm] = useState(false);
   const [openEnvelopeForm, setOpenEnvelopeForm] = useState(false);
-  const [envelopeDetail, setEnvelopeDetail] = useState({ open: false, envelope: new Envelope("", 0, 0, 0)});
+  const [envelopeDetail, setEnvelopeDetail] = useState({ open: false, envelope: new Envelope("", 0, 0, 0) });
 
 
   // ********************************** API calls ********************************** \\
@@ -169,14 +169,13 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
   }
 
   const updateEnvelope = (id: number, newEnvelope: Envelope) => {
-    
+
     const newEnvelopes = envelopes.map((env: Envelope) => {
-      if (env.id === id){
+      if (env.id === id) {
         return newEnvelope
       }
       return env
     })
-
     setEnvelopes(newEnvelopes)
   }
 
@@ -191,7 +190,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     setItems(newItems)
   }
 
-  
+
   // ********************************** Schedule Tasks ********************************** \\
 
   useEffect(() => {
@@ -313,6 +312,8 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
           addEnvelope={addEnvelope}
         />
         <EnvelopeDetailModal
+          setSelectedEnvelope={setSelectedEnvelope}
+          selectedEnvelope={selectedEnvelope}
           handleErrorAndRevertState={handleErrorAndRevertState}
           unassignItem={unassignItem}
           open={envelopeDetail.open}

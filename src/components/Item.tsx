@@ -117,7 +117,6 @@ export default function ItemComponent({
    * @param event 
    */
   const handleDragEnd = async (event: any) => {
-
     setSelectedItem({
       selected: false, item: {}
     })
@@ -136,9 +135,19 @@ export default function ItemComponent({
 
     } else if (selectedEnvelope.selected && selectedItem.selected) {
       try {
-        if (selectedItem.item.amount + selectedEnvelope.envelope.total > selectedEnvelope.envelope.limit_amount) {
+        if (Number(selectedItem.item.amount) + Number(selectedEnvelope.envelope.total) > Number(selectedEnvelope.envelope.limit_amount)) {
           event.target.style.display = "block"
-          handleErrorAndRevertState({code:"", message:"Not enough money in this envelope"})
+          setSelectedEnvelope({
+            selected: false,
+            envelope: {}
+          })
+
+          setSelectedItem({
+            selected: false,
+            envelope: {}
+          })
+
+          handleErrorAndRevertState({ code: "", message: "Not enough money in this envelope" })
           return
         }
         // Hold reference to our envelope_id here
@@ -164,7 +173,7 @@ export default function ItemComponent({
         await fetch(
           "/items/assign",
           "PUT",
-          { id :assignedItem.current, envelope_id: assignedEnv.current }
+          { id: assignedItem.current, envelope_id: assignedEnv.current }
         )
 
       } catch (error) {
@@ -230,6 +239,7 @@ export default function ItemComponent({
           >
             Name:
           </label>
+          &nbsp;
           <input
             onBlur={handleBlur}
             className={classes.borderlessInputPaper}
@@ -243,6 +253,7 @@ export default function ItemComponent({
           >
             Amount:
           </label>
+          &nbsp;
           <input
             style={{
               maxWidth: "50px",
