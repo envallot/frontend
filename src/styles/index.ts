@@ -150,4 +150,9 @@ export const useStyles = makeStyles((theme: Theme) => ({
     outline: "none",
     minWidth: "100px"
   },
+    labelModal: {
+    fontSize: "1.5rem",
+    fontFamily: theme.typography.fontFamily,
+    marginRight: "10px"
+  }
 }));

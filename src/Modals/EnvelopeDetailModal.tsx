@@ -9,11 +9,10 @@ import {
 } from '@material-ui/core'
 
 import { useDebounce } from '../hooks'
-import { makeStyles } from '@material-ui/core/styles';
 import { Email } from '@material-ui/icons'
 
-import { fetch, NetworkError } from '../utils'
-
+import { fetch, NetworkError, validateMoney } from '../utils'
+import { useStyles } from '../styles'
 interface EnvelopeDetailModalPropsType {
   open: boolean
   handleClose: () => void
@@ -22,44 +21,10 @@ interface EnvelopeDetailModalPropsType {
   setEnvelopes: (e: any) => void
   envelopes: any[]
   handleErrorAndRevertState: (e: NetworkError) => void
-  unassignItem: (i:any, e:any) => void
+  unassignItem: (i: any, e: any) => void
+  updateEnvelope: (e:any, e2: any) => void
 }
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  avatar: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3),
-    marginLeft: "auto",
-    marginRight: "auto",
-    backgroundColor: theme.palette.secondary.main,
-
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-  borderlessInputModal: {
-    border: "none",
-    borderColor: "transparent",
-    fontSize: "1.5rem",
-    fontFamily: theme.typography.fontFamily,
-    outline: "none"
-  },
-  labelModal: {
-    fontSize: "1.5rem",
-    fontFamily: theme.typography.fontFamily,
-    marginRight: "10px"
-  }
-}));
 
 /**
  * The debouncing is a bit confusing, since we have to keep track of 'ready' state. When this component renders,
@@ -78,7 +43,8 @@ export default function EnvelopeDetailModal({
   setEnvelopes,
   envelopes,
   handleErrorAndRevertState,
-  unassignItem
+  unassignItem,
+  updateEnvelope
 }: EnvelopeDetailModalPropsType) {
   const classes = useStyles();
 
@@ -91,12 +57,26 @@ export default function EnvelopeDetailModal({
     id: 0
   })
 
+  const [total, setTotal] = useState(envelope.total)
+
   // This hook listens to form state changing, but will delay its output using useTimeout internally
   const debouncedFormState = useDebounce(formState, 1000)
   // This makes sure api is called only after user has changed form state
   const [ready, setReady] = useState(false)
+  // Data validation state
+  const [valid, setValid] = useState(true)
+
 
   const handleChange = (event: any) => {
+    if (event.target.name === "limit_amount") {
+      const dollars = validateMoney(event.target.value)
+      if (!dollars || dollars < envelope.total) {
+        setValid(false)
+      } else if (!valid) {
+        setValid(true)
+      }
+    }
+
     // Standard form state management, but also triggers the ready state, which allows update query to run
     setFormState({
       ...formState,
@@ -116,16 +96,15 @@ export default function EnvelopeDetailModal({
   const submit = async () => {
 
     try {
-      const newEnvelopes = [...envelopes]
-      const index = newEnvelopes.indexOf(envelope)
-      newEnvelopes[index] = { ...newEnvelopes[index], ...debouncedFormState }
-
-      setEnvelopes(newEnvelopes)
-
-      return await fetch('/envelopes', "PUT", formState)
-
+      updateEnvelope(envelope, debouncedFormState)
+      await fetch('/envelopes', "PUT", formState)
     } catch (error) {
       handleErrorAndRevertState(error)
+      setFormState({
+        name: envelope.name,
+        limit_amount: envelope.limit_amount,
+        id: envelope.id
+      })
     } finally {
       setReady(false)
     }
@@ -149,22 +128,33 @@ export default function EnvelopeDetailModal({
   }, [open])
 
 
+  const handleBlur = (event: any) => {
+    setFormState({
+      name: envelope.name,
+      limit_amount: envelope.limit_amount,
+      id: envelope.id
+    })
+    setValid(true)
+  }
 
   useEffect(() => {
     // This hook runs every time debounce changes, as long as the user has triggerd handleChange
-    if (ready && debouncedFormState) {
+    if (ready && debouncedFormState && valid) {
       submit()
     }
   }, [debouncedFormState])
 
+  useEffect(() => {
+    setTotal(envelope.total)
+  }, [envelope.total])
+
 
   const handleClickItem = async (event: any, item: any) => {
     try {
-      
       // Here we change the envelope_id of an item to null, and then
       // make the api call, reversing the transacion if there's an error
       unassignItem(item, envelope.id)
-      await fetch("/envelopes/unassignItem", "PUT", { id:envelope.id, itemID: item.id })
+      await fetch("/envelopes/unassignItem", "PUT", { id: envelope.id, itemID: item.id })
 
     } catch (error) {
       handleErrorAndRevertState(error)
@@ -182,6 +172,8 @@ export default function EnvelopeDetailModal({
         <Avatar className={classes.avatar}>
           <Email />
         </Avatar>
+        <p className={classes.labelModal}>Total: {total} </p>
+
         <form
           onSubmit={handleSubmit}
         >
@@ -197,12 +189,14 @@ export default function EnvelopeDetailModal({
             value={formState.name}
           />
 
-          <p className={classes.labelModal}>Total: {envelope.total} </p>
-
           <label className={classes.labelModal} htmlFor="limit_amount">
             Limit:
             </label>
           <input
+            onBlur={handleBlur}
+            style={{
+              color: valid ? "black" : "red"
+            }}
             className={classes.borderlessInputModal}
             onChange={handleChange}
             type="text"
@@ -211,10 +205,15 @@ export default function EnvelopeDetailModal({
             value={formState.limit_amount}
           />
         </form>
+        {items.filter((i: any) => i.envelope_id === envelope.id).length > 0 ?
+          <Typography
+            component="h1"
+            variant="h5"
+          >
+            Items:
+          </Typography> : null}
 
-        <Typography component="h1" variant="h5">
-          Items:
-        </Typography>
+
 
         <Grid container direction="column" >
           {items.map((item: any) => {

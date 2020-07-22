@@ -66,15 +66,12 @@ export default function ItemFormModal({ addItem, handleClose, open, setAndShowEr
 
     try {
       const { data } = await fetch('/items', 'POST', formState)
-
       addItem(data)
-
     } catch (error) {
       setAndShowError(new NetworkError(error.code, error.message))
     } finally {
       handleClose()
     }
-
   }
 
   return (

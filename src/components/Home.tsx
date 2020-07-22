@@ -184,6 +184,14 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     setEnvelopes(newEnvelopes)
   }
 
+  const updateEnvelope = (oldEnvelope: any, newEnvelope:any) => {
+    const newEnvelopes = [...envelopes]
+    const index = newEnvelopes.indexOf(oldEnvelope)
+    newEnvelopes[index] = { ...newEnvelopes[index], ...newEnvelope }
+
+    setEnvelopes(newEnvelopes)
+  }
+
   const addEnvelope = (envelope: any) => {
     setEnvelopes([envelope, ...envelopes])
   }
@@ -324,6 +332,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
           items={items}
           setEnvelopes={setEnvelopes}
           envelopes={envelopes}
+          updateEnvelope={updateEnvelope}
           handleClose={() => { setEnvelopeDetail({ open: false, envelope: {} }) }}
         />
       </Container>
