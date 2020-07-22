@@ -98,7 +98,7 @@ export default function Bar({ user, setUser, getOrCreateUser, setAndShowError }:
 
         <form onSubmit={(e: any) => e.preventDefault()}>
 
-          <label htmlFor="username"></label>
+          <label className={classes.borderlessInputBar}htmlFor="username">Welcome, </label>
           <input
             className={classes.borderlessInputBar}
             id="username"
