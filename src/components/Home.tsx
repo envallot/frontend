@@ -74,7 +74,6 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     try {
       const { data } = await fetch('/items', "GET")
       setItems(data)
-      console.log('getItems invoke', data)
 
     } catch (error) {
       setAndShowError(error)
