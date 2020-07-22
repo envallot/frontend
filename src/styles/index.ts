@@ -115,7 +115,8 @@ export const useStyles = makeStyles((theme: Theme) => ({
     overflow: 'auto',
     flexDirection: 'column',
     backgroundColor: "pink",
-    pointerEvents: "none"
+    pointerEvents: "none",
+    fontSize: "1.1rem"
   },
   fixedHeight: {
     height: 240,
