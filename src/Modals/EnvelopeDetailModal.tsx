@@ -12,7 +12,6 @@ import { useDebounce } from '../hooks'
 import { makeStyles } from '@material-ui/core/styles';
 import { Email } from '@material-ui/icons'
 
-import{ AxiosError } from 'axios'
 import { fetch, NetworkError } from '../utils'
 
 interface EnvelopeDetailModalPropsType {

@@ -45,6 +45,21 @@ export const useStyles = makeStyles((theme: Theme) => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
   },
+  avatar: {
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(3),
+    marginLeft: "auto",
+    marginRight: "auto",
+    backgroundColor: theme.palette.secondary.main,
+
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
+  submit: {
+        margin: theme.spacing(3, 0, 2),
+      },
   menuButton: {
     marginRight: 36,
   },
@@ -52,7 +67,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     display: 'none',
   },
   noEvents: {
-    pointerEvents:"none"
+    pointerEvents: "none"
   },
   title: {
     flexGrow: 1,
@@ -100,7 +115,7 @@ export const useStyles = makeStyles((theme: Theme) => ({
     overflow: 'auto',
     flexDirection: 'column',
     backgroundColor: "pink",
-    pointerEvents:"none"
+    pointerEvents: "none"
   },
   fixedHeight: {
     height: 240,
@@ -133,6 +148,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
     borderColor: "transparent",
     fontFamily: theme.typography.fontFamily,
     outline: "none",
-    minWidth:"100px"
+    minWidth: "100px"
   },
 }));

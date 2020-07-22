@@ -4,7 +4,7 @@ import Grid from "@material-ui/core/Grid";
 import { useStyles } from '../styles'
 import { useDebounce } from '../hooks'
 import { AxiosError } from 'axios'
-import { fetch, NetworkError } from '../utils'
+import { fetch, NetworkError, validateMoney } from '../utils'
 
 interface ItemPropsType {
   item: any
@@ -20,33 +20,6 @@ interface ItemPropsType {
   assignItem: (i: any, e: number) => void
 }
 
-const validateMoney = (value: string) => {
-
-  const regex = /^[0-9]\d*(((,\d{3}){1})?(\.\d{0,2})?)$/
-  if (regex.test(value)) {
-    //Input is valid, check the number of decimal places
-    var twoDecimalPlaces = /\.\d{2}$/g;
-    var oneDecimalPlace = /\.\d{1}$/g;
-    var noDecimalPlacesWithDecimal = /\.\d{0}$/g;
-
-    if (value.match(twoDecimalPlaces)) {
-      //all good, return as is
-      return value;
-    }
-    if (value.match(noDecimalPlacesWithDecimal)) {
-      //add two decimal places
-      return value + '00';
-    }
-    if (value.match(oneDecimalPlace)) {
-      //ad one decimal place
-      return value + '0';
-    }
-    //else there is no decimal places and no decimal
-    return value + ".00";
-  }
-
-  return false
-}
 
 export default function Item({
   item,

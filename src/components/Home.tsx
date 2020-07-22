@@ -187,6 +187,10 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     setEnvelopes(newEnvelopes)
   }
 
+  const addEnvelope = (envelope:any) => {
+    setEnvelopes([envelope, ...envelopes])
+  }
+
 
   // ********************************** Schedule Tasks ********************************** \\
 
@@ -296,7 +300,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
             </Grid>
           </Grid>
         </Grid>
-
+ 
         <ItemFormModal
           items={items}
           setItems={setItems}
@@ -304,10 +308,10 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
           handleClose={() => { setOpenItemForm(false) }}
         />
         <EnvelopeFormModal
-          envelopes={envelopes}
-          setEnvelopes={setEnvelopes}
           open={openEnvelopeForm}
           handleClose={() => { setOpenEnvelopeForm(false) }}
+          setAndShowError={setAndShowError}
+          addEnvelope={addEnvelope}
         />
         <EnvelopeDetailModal
           handleErrorAndRevertState={handleErrorAndRevertState}

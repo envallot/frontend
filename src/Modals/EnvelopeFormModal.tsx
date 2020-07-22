@@ -5,46 +5,23 @@ import {
   Avatar,
   TextField,
   Typography,
-  Container
+  Container,
 } from '@material-ui/core'
 
-import { makeStyles } from '@material-ui/core/styles';
+// import { makeStyles } from '@material-ui/core/styles';
 import { Email } from '@material-ui/icons'
 
-import axios from 'axios'
+import { fetch, NetworkError, validateMoney } from '../utils'
+import { useStyles } from '../styles'
 
 interface EnvelopeFormModalPropsType {
   open: boolean
   handleClose: () => void
-  setEnvelopes: (arg: any) => void
-  envelopes: any
+  setAndShowError: (e: NetworkError) => void
+  addEnvelope: (e: any) => void
 }
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  avatar: {
-    marginTop: theme.spacing(3),
-    marginBottom: theme.spacing(3),
-    marginLeft: "auto",
-    marginRight: "auto",
-    backgroundColor: theme.palette.secondary.main,
-
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-}));
-
-export default function EnvelopeFormModal({ handleClose, open, setEnvelopes, envelopes }: EnvelopeFormModalPropsType) {
+export default function EnvelopeFormModal({ addEnvelope, setAndShowError, handleClose, open }: EnvelopeFormModalPropsType) {
   const classes = useStyles();
 
   const [formState, setFormState] = useState({
@@ -52,11 +29,33 @@ export default function EnvelopeFormModal({ handleClose, open, setEnvelopes, env
     limit_amount: ""
   })
 
+  const [validName, setValidName] = useState(false)
+  const [validLimitAmount, setValidLimitAmount] = useState(false)
+
+
   useEffect(() => {
     console.log(formState)
   }, [formState])
 
   const handleChange = ({ target }: any) => {
+
+    if (target.name === "limit_amount") {
+      const dollars = validateMoney(target.value)
+      if (!dollars) {
+        setValidLimitAmount(false)
+      } else {
+        if (!validLimitAmount) {
+          setValidLimitAmount(true)
+        }
+      }
+    } else if (target.name === "name") {
+      if (target.value === "") {
+        setValidName(false)
+      } else if (!validName) {
+        setValidName(true)
+      }
+    }
+
     setFormState({
       ...formState,
       [target.name]: target.value
@@ -65,18 +64,13 @@ export default function EnvelopeFormModal({ handleClose, open, setEnvelopes, env
 
   const handleSubmit = async (e: any) => {
     e.preventDefault()
-    console.log('onSubmitted')
 
     try {
-      const { data } = await axios(process.env.REACT_APP_URL + '/envelopes', {
-        method: 'POST',
-        withCredentials: true,
-        data: formState
-      })
-      setEnvelopes([data, ...envelopes])
-
-    } catch (error) {
-      console.log('post env error', error)
+      const { data } = await fetch('/envelopes', 'POST', formState)
+      addEnvelope(data)
+    } catch ({ response }) {
+      const error = response.data
+      setAndShowError(new NetworkError(error.code, error.message))
     } finally {
       handleClose()
     }
@@ -112,6 +106,11 @@ export default function EnvelopeFormModal({ handleClose, open, setEnvelopes, env
           />
 
           <TextField
+            InputProps={{
+              style: {
+                color: validLimitAmount ? "black" : "red"
+              }
+            }}
             variant="outlined"
             margin="normal"
             required
@@ -125,6 +124,7 @@ export default function EnvelopeFormModal({ handleClose, open, setEnvelopes, env
             onChange={handleChange}
           />
           <Button
+            disabled={!validName || !validLimitAmount}
             type="submit"
             fullWidth
             variant="contained"
