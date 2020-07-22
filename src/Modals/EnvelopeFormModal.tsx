@@ -37,11 +37,6 @@ export default function EnvelopeFormModal({
   const [validName, setValidName] = useState(false)
   const [validLimitAmount, setValidLimitAmount] = useState(true)
 
-
-  useEffect(() => {
-    console.log(formState)
-  }, [formState])
-
   const handleChange = ({ target }: any) => {
 
     if (target.name === "limit_amount") {
@@ -72,9 +67,6 @@ export default function EnvelopeFormModal({
 
     try {
       const { data } = await fetch('/envelopes', 'POST', formState)
-      console.log(
-        'newly added envelope', data
-      )
       addEnvelope(data)
     } catch ({ response }) {
       const error = response.data

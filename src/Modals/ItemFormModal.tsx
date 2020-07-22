@@ -32,11 +32,6 @@ export default function ItemFormModal({ addItem, handleClose, open, setAndShowEr
   const [validName, setValidName] = useState(false)
   const [validAmount, setValidAmount] = useState(true)
 
-
-  useEffect(() => {
-    console.log(formState)
-  }, [formState])
-
   const handleChange = ({ target }: any) => {
 
     if (target.name === "amount") {

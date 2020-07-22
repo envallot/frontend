@@ -100,9 +100,7 @@ export default function EnvelopeDetailModal({
 
   const submit = async () => {
 
-    try {
-      console.log('change submitted', formState, debouncedFormState)
-      
+    try {      
       updateEnvelope(envelope.id, debouncedFormState)
       await fetch('/envelopes', "PUT", formState)
     } catch (error) {
@@ -152,7 +150,6 @@ export default function EnvelopeDetailModal({
   }, [debouncedFormState])
 
   useEffect(() => {
-    console.log('total changed', total)
     setTotal(envelope.total)
   }, [envelope.total])
 
