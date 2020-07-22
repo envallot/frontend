@@ -188,6 +188,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     setItems(newItems)
   }
 
+  
   // ********************************** Schedule Tasks ********************************** \\
 
   useEffect(() => {

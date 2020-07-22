@@ -1,44 +1,37 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Enve-Allot implements the envelope budgeting system. When people get paychecks, they divide the cash into envelopes marked with categories. For instance, when you want to buy a diet coke, you take out a dollar from the envelope marked 'Sodas'. 
+
+In this app, you can create an item by clicking the '+' icon next to 'Items'. Next, click on the '+' next to 'Envelopes'. Drag the item to the envelope, and click on the envelope. Click on the item the envelope to take out, and drag the envelope to the trashcan to delete it. Or, just drag the envelope with the item over to '+ Items'. When an envelope's total has reached its limit, you can not place any more items in, modeling how envelopes work in real life. 
+
 
 ## Available Scripts
 
 In the project directory, you can run:
 
-### `yarn start`
+### `npm start`
 
 Runs the app in the development mode.<br />
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+## In Detail
 
-### `yarn test`
+* Create react app with typescript was used
+* No register or login required
+* No global state handler such as redux is used
+* Modals are used extensively for easy navigation
+* Simple and fast UI interface with data validation
+* Formless update to reduce clutter
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Challenges
 
-### `yarn build`
+### `Drag and Drop`
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Drag and drop was implemented without a third party library. It uses props to know what to do on drag end or on drag start. Actions that pertain to the dragged component are defined and executed within the component.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+### `Formless Update`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+To update your username, or various item or envelope properties, you can simply type them in instead of opening a form. A debouncer costum hook is used to accomplish this.
 
-### `yarn eject`
+### `Fast User Interface`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+To accomplish a snappy interface, we update data without first running the API call. If there is an error, we revert application state back to the last persisted valid state. Test this out by updating an item to have a blank name.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
