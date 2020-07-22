@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Grid, Typography } from '@material-ui/core'
 import { Add as AddIcon } from '@material-ui/icons'
-import { useStyles } from '../styles'
 
 interface ItemsBannerProps {
   setItemsBannerSelected: (b: boolean) => void
@@ -20,11 +19,6 @@ export default function ItemsBanner({ selectedEnvelope, setOpenItemForm, setItem
   const handleDragLeave = (event: any) => {
     setItemsBannerSelected(false)
   }
-
-  const getStyles = () => {
-    return selectedEnvelope ? { pointerEvents: "none" } : {}
-  }
-  const classes = useStyles()
 
   return (
     <Grid
@@ -46,7 +40,6 @@ export default function ItemsBanner({ selectedEnvelope, setOpenItemForm, setItem
         display="block"
         variant="h4"
         component="h2"
-
       >
         Items
       </Typography>
