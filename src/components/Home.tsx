@@ -115,7 +115,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
 
   // ********************************** Helpers ********************************** \\
 
-  const handleErrorAndRevertState = (error:NetworkError) => {
+  const handleErrorAndRevertState = (error: NetworkError) => {
     setAndShowError(error)
     getItems()
     getEnvelopes()
@@ -124,21 +124,14 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
 
   // ********************************** Item Helpers ********************************** \\
 
-  const unassignItems = (envelopeID: number) => {
-    const newItems = items.map((item: any) => {
-      return item.envelope_id === envelopeID ? { ...item, envelope_id: null } : item
-    })
-    setItems(newItems)
-  }
-
-  const unassignItem = (item: any, envelopeID:number) => {
+  const unassignItem = (item: any, envelopeID: number) => {
     const newItems = [...items]
     const index = newItems.indexOf(item)
     newItems[index] = { ...item, envelope_id: null }
     setItems(newItems)
 
-    const newEnvelopes = envelopes.map((e:any) => {
-      if(e.id === envelopeID) {
+    const newEnvelopes = envelopes.map((e: any) => {
+      if (e.id === envelopeID) {
         e.total = round(e.total - item.amount)
         return e
       }
@@ -161,6 +154,10 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     setItems(newItems)
   }
 
+  const addItem = (item: any) => {
+    setItems([item, ...items])
+  }
+
   const assignItem = (item: any, envelopeID: number) => {
     const newItems = [...items]
     const index = newItems.indexOf(item)
@@ -169,7 +166,7 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
 
     const newEnvelopes = envelopes.map((e: any) => {
       if (e.id === envelopeID) {
-        e.total = round(e.total + item.amount) 
+        e.total = round(e.total + item.amount)
         return e
       }
       return e
@@ -187,10 +184,16 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
     setEnvelopes(newEnvelopes)
   }
 
-  const addEnvelope = (envelope:any) => {
+  const addEnvelope = (envelope: any) => {
     setEnvelopes([envelope, ...envelopes])
   }
 
+  const unassignItems = (envelopeID: number) => {
+    const newItems = items.map((item: any) => {
+      return item.envelope_id === envelopeID ? { ...item, envelope_id: null } : item
+    })
+    setItems(newItems)
+  }
 
   // ********************************** Schedule Tasks ********************************** \\
 
@@ -300,12 +303,12 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
             </Grid>
           </Grid>
         </Grid>
- 
+
         <ItemFormModal
-          items={items}
-          setItems={setItems}
           open={openItemForm}
           handleClose={() => { setOpenItemForm(false) }}
+          addItem={addItem}
+          setAndShowError={setAndShowError}
         />
         <EnvelopeFormModal
           open={openEnvelopeForm}

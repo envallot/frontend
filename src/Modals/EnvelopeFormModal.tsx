@@ -26,11 +26,11 @@ export default function EnvelopeFormModal({ addEnvelope, setAndShowError, handle
 
   const [formState, setFormState] = useState({
     name: "",
-    limit_amount: ""
+    limit_amount: "0"
   })
 
   const [validName, setValidName] = useState(false)
-  const [validLimitAmount, setValidLimitAmount] = useState(false)
+  const [validLimitAmount, setValidLimitAmount] = useState(true)
 
 
   useEffect(() => {

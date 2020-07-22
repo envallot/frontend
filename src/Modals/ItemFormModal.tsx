@@ -2,79 +2,75 @@ import React, { useState, useEffect } from 'react'
 import {
   Dialog,
   Button,
-  Avatar, 
-  TextField, 
+  Avatar,
+  TextField,
   Typography,
   Container
 } from '@material-ui/core'
 
-import { makeStyles } from '@material-ui/core/styles';
 import { ShoppingCart } from '@material-ui/icons'
 
-import axios from 'axios'
+import { validateMoney, NetworkError, fetch } from '../utils';
+import { useStyles} from '../styles'
 
 interface ItemFormModalPropsType {
   open: boolean
   handleClose: () => void
-  setItems: (s:any) => void
-  items: any
+  addItem: (i: any) => void
+  setAndShowError: (e: NetworkError) => void
 }
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-}));
 
-export default function ItemFormModal({ handleClose, open, items, setItems }: ItemFormModalPropsType) {
+export default function ItemFormModal({ addItem, handleClose, open, setAndShowError }: ItemFormModalPropsType) {
   const classes = useStyles();
 
   const [formState, setFormState] = useState({
     name: "",
-    amount: ""
+    amount: "0"
   })
+
+  const [validName, setValidName] = useState(false)
+  const [validAmount, setValidAmount] = useState(true)
+
 
   useEffect(() => {
     console.log(formState)
   }, [formState])
 
   const handleChange = ({ target }: any) => {
+
+    if (target.name === "amount") {
+      const dollars = validateMoney(target.value)
+      if (!dollars) {
+        setValidAmount(false)
+      } else {
+        if (!validAmount) {
+          setValidAmount(true)
+        }
+      }
+    } else if (target.name === "name") {
+      if (target.value === "") {
+        setValidName(false)
+      } else if (!validName) {
+        setValidName(true)
+      }
+    }
     setFormState({
       ...formState,
       [target.name]: target.value
     })
   }
 
-  const handleSubmit = async (e:any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault()
-    console.log('onSubmitted')
 
     try {
-      
-      const { data } = await axios(process.env.REACT_APP_URL + '/items', {
-        method: 'POST',
-        withCredentials: true,
-        data: formState
-      })
-      
-      setItems([data, ...items])
-      
+      const { data } = await fetch('/items', 'POST', formState)
+
+      addItem(data)
+
     } catch (error) {
-      console.log('post item error', error)
+      setAndShowError(new NetworkError(error.code, error.message))
     } finally {
       handleClose()
     }
@@ -111,6 +107,11 @@ export default function ItemFormModal({ handleClose, open, items, setItems }: It
           />
 
           <TextField
+            InputProps={{
+              style: {
+                color: validAmount ? "black" : "red"
+              }
+            }}
             variant="outlined"
             margin="normal"
             required
@@ -124,6 +125,7 @@ export default function ItemFormModal({ handleClose, open, items, setItems }: It
             onChange={handleChange}
           />
           <Button
+            disabled={!validName || !validAmount}
             type="submit"
             fullWidth
             variant="contained"
