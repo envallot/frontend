@@ -3,7 +3,7 @@ import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import { useStyles } from '../styles'
 import { useDebounce } from '../hooks'
-import { fetch, NetworkError, validateMoney, Item } from '../utils'
+import { fetch, NetworkError, validateMoney, Item, DEBOUNCE_DELAY } from '../utils'
 
 interface ItemPropsType {
   item: Item
@@ -70,7 +70,7 @@ export default function ItemComponent({
     setReady(true)
   }
 
-  const debouncedFormState = useDebounce(formState, 500)
+  const debouncedFormState = useDebounce(formState, DEBOUNCE_DELAY)
 
   // If item changes, for instance when reverting state on error, we reflect it in form state
   useEffect(() => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetch, NetworkError, User } from '../utils'
+import { fetch, NetworkError, User, DEBOUNCE_DELAY } from '../utils'
 import { useDebounce } from '../hooks'
 
 import {
@@ -49,7 +49,7 @@ export default function Bar({ user, setUser, getOrCreateUser, setAndShowError }:
     })
   }
 
-  const debouncedFormState = useDebounce(formState, 1000)
+  const debouncedFormState = useDebounce(formState, DEBOUNCE_DELAY)
 
   
   // ********************************** API calls ********************************** \\

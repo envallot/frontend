@@ -11,7 +11,7 @@ import {
 import { useDebounce } from '../hooks'
 import { Email } from '@material-ui/icons'
 
-import { fetch, NetworkError, validateMoney, Item, Envelope } from '../utils'
+import { fetch, NetworkError, validateMoney, Item, Envelope, DEBOUNCE_DELAY } from '../utils'
 import { useStyles } from '../styles'
 
 interface EnvelopeDetailModalPropsType {
@@ -65,7 +65,7 @@ export default function EnvelopeDetailModal({
   const [total, setTotal] = useState(envelope.total)
 
   // This hook listens to form state changing, but will delay its output using useTimeout internally
-  const debouncedFormState = useDebounce(formState, 1000)
+  const debouncedFormState = useDebounce(formState, DEBOUNCE_DELAY)
   // This makes sure api is called only after user has changed form state
   const [ready, setReady] = useState(false)
   // Data validation state

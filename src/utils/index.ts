@@ -1,5 +1,7 @@
 import axios, { Method } from 'axios'
 
+export const DEBOUNCE_DELAY = 1500
+
 export const fetch = (path: string, method: Method, data: any = {}) => {
   return axios.create({
     baseURL: process.env.REACT_APP_URL
