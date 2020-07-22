@@ -21,7 +21,12 @@ interface EnvelopeFormModalPropsType {
   addEnvelope: (e: Envelope) => void
 }
 
-export default function EnvelopeFormModal({ addEnvelope, setAndShowError, handleClose, open }: EnvelopeFormModalPropsType) {
+export default function EnvelopeFormModal({
+  addEnvelope,
+  setAndShowError,
+  handleClose,
+  open
+}: EnvelopeFormModalPropsType) {
   const classes = useStyles();
 
   const [formState, setFormState] = useState({
@@ -67,6 +72,9 @@ export default function EnvelopeFormModal({ addEnvelope, setAndShowError, handle
 
     try {
       const { data } = await fetch('/envelopes', 'POST', formState)
+      console.log(
+        'newly added envelope', data
+      )
       addEnvelope(data)
     } catch ({ response }) {
       const error = response.data

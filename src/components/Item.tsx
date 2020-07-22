@@ -137,7 +137,7 @@ export default function ItemComponent({
     } else if (selectedEnvelope.selected && selectedItem.selected) {
       try {
         if (selectedItem.item.amount + selectedEnvelope.envelope.total > selectedEnvelope.envelope.limit_amount) {
-          console.log('toobig', selectedItem.item.amount, selectedEnvelope.envelope.total )
+          event.target.style.display = "block"
           handleErrorAndRevertState({code:"", message:"Not enough money in this envelope"})
           return
         }
@@ -189,9 +189,6 @@ export default function ItemComponent({
       )
 
     } catch (error) {
-      console.log(
-        'itemError', error.response.data
-      )
       handleErrorAndRevertState(error.response.data)
     } finally {
       setReady(false)

@@ -16,11 +16,8 @@ export default function ItemsBanner({ selectedEnvelope, setOpenItemForm, setItem
     event.preventDefault()
     selectedEnvelope.selected && setItemsBannerSelected(true)
   }
-
-  useEffect(()=>console.log('itemsBannerSelected, selectedEnvelope.selected',itemsBannerSelected, selectedEnvelope.selected ), [itemsBannerSelected, selectedEnvelope])
   
   const handleDragLeave = (event: any) => {
-    console.log('items banner drag leave')
     setItemsBannerSelected(false)
   }
 
