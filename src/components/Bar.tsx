@@ -85,14 +85,14 @@ export default function Bar({ user, setUser, getOrCreateUser, setAndShowError }:
   return (
     <AppBar elevation={0} position="static">
       <Toolbar className={classes.toolbar}>
-        <IconButton
+        {/* <IconButton
           edge="start"
           className={classes.menuButton}
           color="inherit"
           aria-label="open drawer"
         >
           <MenuIcon />
-        </IconButton>
+        </IconButton> */}
         <Typography className={classes.title} variant="h5" noWrap>
           Env-Allot: easy budgeting
         </Typography>
@@ -111,12 +111,12 @@ export default function Bar({ user, setUser, getOrCreateUser, setAndShowError }:
           />
 
         </form>
-        <IconButton aria-label="search" color="inherit">
+        {/* <IconButton aria-label="search" color="inherit">
           <SearchIcon />
         </IconButton>
         <IconButton aria-label="display more actions" edge="end" color="inherit">
           <MoreIcon />
-        </IconButton>
+        </IconButton> */}
       </Toolbar>
     </AppBar>
   )

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Grid, Typography } from '@material-ui/core'
+import { Grid, Typography, IconButton } from '@material-ui/core'
 import { Add as AddIcon } from '@material-ui/icons'
 
 interface ItemsBannerProps {
@@ -15,7 +15,7 @@ export default function ItemsBanner({ selectedEnvelope, setOpenItemForm, setItem
     event.preventDefault()
     selectedEnvelope.selected && setItemsBannerSelected(true)
   }
-  
+
   const handleDragLeave = (event: any) => {
     setItemsBannerSelected(false)
   }
@@ -32,11 +32,21 @@ export default function ItemsBanner({ selectedEnvelope, setOpenItemForm, setItem
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
     >
-      <AddIcon
-        fontSize={"large"}
+      <IconButton
         onClick={() => { setOpenItemForm(true) }}
-      />
+        aria-label="search"
+        color="inherit"
+      >
+        <AddIcon
+          fontSize={"large"}
+
+        />
+      </IconButton>
       <Typography
+        style={{
+          padding: "10px"
+        }}
+        align="center"
         display="block"
         variant="h4"
         component="h2"

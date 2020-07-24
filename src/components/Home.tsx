@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Container, Typography, Grid } from '@material-ui/core';
+import { Container, Typography, Grid, IconButton } from '@material-ui/core';
 import { Add as AddIcon } from '@material-ui/icons';
 
 import {
@@ -262,11 +262,20 @@ export default function Home({ setUser, setError, setShowErrorModal, user, setAn
                 key="item_buttons"
                 xs={12}
               >
-                <AddIcon
-                  fontSize={"large"}
+                <IconButton
+                  aria-label="search"
+                  color="inherit"
                   onClick={() => { setOpenEnvelopeForm(true) }}
-                />
+                >
+                  <AddIcon
+                    fontSize={"large"}
+
+                  />
+                </IconButton>
                 <Typography
+                  style={{
+                    padding: "10px"
+                  }}
                   display="block"
                   variant="h4"
                   component="h2"
