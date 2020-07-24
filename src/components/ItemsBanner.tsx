@@ -31,6 +31,7 @@ export default function ItemsBanner({ selectedEnvelope, setOpenItemForm, setItem
       }}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
+      onDrop={(event:any) => event.preventDefault()}
     >
       <IconButton
         onClick={() => { setOpenItemForm(true) }}

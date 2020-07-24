@@ -18,7 +18,6 @@ export default function DeleteIcon({ setDeleteSelected, deleteSelected }: Delete
 
   const handleDragLeave = (event: any) => {
     setDeleteSelected(false)
-
   }
 
   return (
@@ -33,6 +32,7 @@ export default function DeleteIcon({ setDeleteSelected, deleteSelected }: Delete
       alignItems="center"
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
+      onDrop={(event:any) => event.preventDefault()}
     >
 
       <DeleteForever

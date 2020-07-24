@@ -58,6 +58,7 @@ export default function ItemFormModal({ addItem, handleClose, open, setAndShowEr
 
   const handleSubmit = async (e: any) => {
     e.preventDefault()
+    e.stopPropagation()
 
     try {
       const { data } = await fetch('/items', 'POST', formState)

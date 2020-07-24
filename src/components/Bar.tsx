@@ -106,7 +106,7 @@ export default function Bar({ user, setUser, getOrCreateUser, setAndShowError }:
             name="username"
             placeholder="Add your username"
             type="text"
-            value={formState.username}
+            value={formState.username || ""}
             onChange={handleChange}
           />
 

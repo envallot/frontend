@@ -40,9 +40,12 @@ export default function EnvelopeComponent({
   // ********************************** DND Handlers When Item Is Dragged ********************************** \\
 
   const handleDragOver = (event: any) => {
-    event.preventDefault()
-    
-      if (!selectedEnvelope.selected ) {
+    // event.preventDefault()
+    // const data = event.dataTransfer.getData("text/plain");
+    // event.target.textContent = data;
+    event.preventDefault();
+
+    if (!selectedEnvelope.selected) {
       setSelectedEnvelope({
         selected: true,
         envelope
@@ -66,6 +69,8 @@ export default function EnvelopeComponent({
   // ********************************** DND Handlers When Envelope Is Dragged ********************************** \\
 
   const handleDragStart = (event: any) => {
+     // firefox requires using dataTransfer to make component draggable
+     event.dataTransfer.setData("text/plain", "Drag start");
     const target = event.target
 
     setSelectedEnvelope({
@@ -79,7 +84,7 @@ export default function EnvelopeComponent({
   }
 
   const handleDragEnd = async (event: any) => {
-
+    event.preventDefault()
     setSelectedEnvelope({
       selected: false,
       envelope: {}
@@ -124,6 +129,7 @@ export default function EnvelopeComponent({
       onDragLeave={handleDragLeave}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onDrop={(event:any) => event.preventDefault()}
     >
       <Paper
         style={{

@@ -99,6 +99,9 @@ export default function ItemComponent({
    * and removes selected item from 'items' state
    */
   const handleDragStart = (event: any) => {
+    // firefox requires using dataTransfer to make component draggable
+    event.dataTransfer.setData("text/plain", "Drag start");
+
     const target = event.target
     setSelectedItem({
       selected: true,
@@ -107,7 +110,8 @@ export default function ItemComponent({
 
     setTimeout(() => {
       target.style.display = "none"
-    }, 0)
+    }, 100)
+   
   }
 
 
@@ -117,6 +121,8 @@ export default function ItemComponent({
    * @param event 
    */
   const handleDragEnd = async (event: any) => {
+    // Firefox requires prevent default on both drop event and endDrag events
+    event.preventDefault()
     setSelectedItem({
       selected: false, item: {}
     })
@@ -129,7 +135,6 @@ export default function ItemComponent({
         await fetch(`/items/${item.id}`, "DELETE")
 
       } catch (error) {
-
         handleErrorAndRevertState(new NetworkError(error.code, error.message))
       }
 
